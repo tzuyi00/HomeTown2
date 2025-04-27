@@ -1,0 +1,124 @@
+// Required
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "./_variables";
+@import "~bootstrap/scss/mixins";
+
+// Bootstrap
+// @import '~bootstrap/scss/bootstrap';
+
+// Optional
+@import "~bootstrap/scss/root";
+@import "~bootstrap/scss/reboot";
+@import "~bootstrap/scss/type";
+@import "~bootstrap/scss/images";
+// @import "~bootstrap/scss/code";
+@import "~bootstrap/scss/grid";
+@import "~bootstrap/scss/tables";
+@import "~bootstrap/scss/forms";
+@import "~bootstrap/scss/buttons";
+@import "~bootstrap/scss/transitions";
+@import "~bootstrap/scss/dropdown";
+@import "~bootstrap/scss/button-group";
+@import "~bootstrap/scss/input-group";
+@import "~bootstrap/scss/custom-forms";
+@import "~bootstrap/scss/nav";
+@import "~bootstrap/scss/navbar";
+// @import "~bootstrap/scss/card";
+@import "~bootstrap/scss/breadcrumb";
+@import "~bootstrap/scss/pagination";
+@import "~bootstrap/scss/badge";
+// @import "~bootstrap/scss/jumbotron";
+@import "~bootstrap/scss/alert";
+@import "~bootstrap/scss/progress";
+// @import "~bootstrap/scss/media";
+@import "~bootstrap/scss/list-group";
+@import "~bootstrap/scss/close";
+@import "~bootstrap/scss/toasts";
+@import "~bootstrap/scss/modal";
+// @import "~bootstrap/scss/tooltip";
+@import "~bootstrap/scss/popover";
+// @import "~bootstrap/scss/carousel";
+@import "~bootstrap/scss/spinners";
+@import "~bootstrap/scss/utilities";
+// @import "~bootstrap/scss/print";
+
+// components
+// backend
+@import "./components/_navpanel";
+@import "./components/_card";
+// frontend
+@import "./components/_nav";
+@import "./components/_footer";
+@import "./components/_index";
+@import "./components/_products";
+@import "./components/_product";
+@import "./components/_banner";
+@import "./components/_cart";
+@import "./components/_coupon";
+
+a {
+  color: $body-color;
+}
+a:hover{
+  color: $info;
+  text-decoration: none;
+}
+
+.none{
+  display: none !important;
+}
+
+.title{
+  font-family: 'Marcellus SC',serif;
+}
+
+.line{
+  height: 5px;
+  background-color: $primary;
+}
+
+.bg-main-bg {
+  background-color: $egg !important;
+}
+
+.ml2{
+  margin-left: 0.5rem;
+}
+
+.hide-navpanel-btn {
+  margin-left: 4.6rem;
+}
+
+.back-brand{
+  .logoImg{
+    width: 70px;
+  }
+  .logoTxt {
+    font-family: 'Marcellus SC', serif;
+    font-weight: bold;
+    font-size: 22px;
+    margin-left: 5px;
+    letter-spacing: 1px;
+  }
+}
+
+.breadcrumb{
+  background-color: transparent;
+}
+
+.modal {
+  .modal-content {
+    border: none;
+
+    .modal-header {
+      padding: 0.5rem 1rem;
+      border-bottom: none;
+      background-color: $info;
+      button.close{
+        color: #ffffff;
+        opacity: 1;
+      }
+    }
+  }
+}

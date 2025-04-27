@@ -1,0 +1,148 @@
+#nav {
+  background-color: #fff;
+  font-size: 18px;
+  letter-spacing: 1px;
+
+  a {
+    &.router-link-exact-active {
+      color: $info;
+    }
+
+    &.router-link-exact-active.navbar-brand,
+    &.router-link-active.navbar-brand:hover {
+      color: $body-color;
+    }
+
+    i {
+      font-size: 20px;
+    }
+  }
+
+  .navbar-brand {
+    text-align: center;
+
+    img.logoImg {
+      width: 62px;
+    }
+
+    .logoTxt {
+      font-family: 'Marcellus SC', serif;
+      font-weight: bold;
+      font-size: 22px;
+    }
+  }
+
+  @media (max-width: 575.98px) {
+    .navbar-brand {
+      margin-right: 0;
+
+      img.logoImg {
+        width: 50px;
+      }
+
+      .logoTxt {
+        font-size: 18px;
+      }
+    }
+
+    ul.objs {
+      span {
+        font-size: 14px;
+      }
+    }
+  }
+
+
+  .dropdown {
+    .dropdown-toggle::after {
+      display: none;
+    }
+
+    .dropdown-toggle {
+      span{
+        font-size: 14px;
+      }
+      .badge {
+        transform: translateX(-6px) translateY(-7px);
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+        padding: 3px;
+      }
+    }
+
+    .dropdown-menu {
+      width: 360px;
+
+      .cart-scroll {
+        max-width: 360px;
+        max-height: 40vh;
+        overflow-y: auto;
+      }
+
+
+
+      .totalInfo {
+        padding: 3px 13px;
+        text-align: right;
+
+        p {
+          font-size: 18px;
+        }
+
+        .payBtn {
+          display: block;
+
+          i {
+            font-size: 16px;
+          }
+        }
+      }
+
+    }
+
+    @media (max-width: 575.98px) {
+      .dropdown-menu {
+        width: 300px;
+      }
+    }
+  }
+
+}
+
+table.itemContent {
+  tbody {
+    padding: 3px 10px;
+
+    tr {
+      margin: 6px 3px;
+      border-bottom: 1px solid $primary;
+
+      td {
+        padding: 5px;
+      }
+
+      .itemPicture {
+        img {
+          width: 90%;
+          min-width: 50px;
+          height: 50px;
+          object-fit: cover;
+        }
+      }
+
+      .itemName {
+        width: 50%;
+      }
+
+      .trashIcon {
+        cursor: pointer;
+      }
+
+      .trashIcon:hover {
+        color: #f00;
+      }
+    }
+  }
+}
