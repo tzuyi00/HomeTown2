@@ -3,16 +3,16 @@
     <loading :active.sync="isLoading"></loading>
     <div class="banner" :style="{backgroundImage: `url(${img.banner})` }">
       <div class="bannerTitle">
-        <h1>家具列表</h1>
+        <h1>Product List</h1>
       </div>
     </div>
     <div class="category mx-auto">
       <ul>
-        <li :class="{ active: filterType === 'all' }" @click="getFilter(filterType = 'all')">全部家具</li>
-        <li :class="{ active: filterType === 'table' }" @click="getFilter(filterType = 'table')">桌子</li>
-        <li :class="{ active: filterType === 'chair' }" @click="getFilter(filterType = 'chair')">椅子</li>
-        <li :class="{ active: filterType === 'sofa' }" @click="getFilter(filterType = 'sofa')">沙發</li>
-        <li :class="{ active: filterType === 'lamp' }" @click="getFilter(filterType = 'lamp')">燈飾</li>
+        <li :class="{ active: filterType === 'all' }" @click="getFilter(filterType = 'all')">All Products</li>
+        <li :class="{ active: filterType === 'table' }" @click="getFilter(filterType = 'table')">Tables</li>
+        <li :class="{ active: filterType === 'chair' }" @click="getFilter(filterType = 'chair')">Chairs</li>
+        <li :class="{ active: filterType === 'sofa' }" @click="getFilter(filterType = 'sofa')">Sofas</li>
+        <li :class="{ active: filterType === 'lamp' }" @click="getFilter(filterType = 'lamp')">Lamps</li>
       </ul>
     </div>
     <div class="container-fluid">
@@ -23,7 +23,7 @@
               <div class="top">
                 <div class="detailBg">
                   <div class="detailBtn">
-                    Veiw Detail
+                    View Detail
                   </div>
                 </div>
                 <img :src="item.imageUrl[0]" alt />
@@ -70,7 +70,7 @@ export default {
     }
   },
   created () {
-    this.isLoading = true
+    // this.isLoading = true
     this.getProducts()
   },
   methods: {
@@ -90,16 +90,16 @@ export default {
           this.newProducts = this.products
           break
         case 'table':
-          this.newProducts = this.products.filter((item) => item.category === '桌子')
+          this.newProducts = this.products.filter((item) => item.category === 'Tables')
           break
         case 'chair':
-          this.newProducts = this.products.filter((item) => item.category === '椅子')
+          this.newProducts = this.products.filter((item) => item.category === 'Chairs')
           break
         case 'sofa':
-          this.newProducts = this.products.filter((item) => item.category === '沙發')
+          this.newProducts = this.products.filter((item) => item.category === 'Sofas')
           break
         case 'lamp':
-          this.newProducts = this.products.filter((item) => item.category === '燈飾')
+          this.newProducts = this.products.filter((item) => item.category === 'Lamps')
           break
         default:
           break

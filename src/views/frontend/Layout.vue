@@ -9,8 +9,8 @@
             <h2 class="title">Contact Us</h2>
             <div class="line"></div>
             <p class="mt-4">
-              感謝您對 HomeTown 的支持與愛護，如有任何問題或商品合作洽談，
-              歡迎提出意見及回饋，我們將用心聆聽，並以最快速度回應，為您提供更好的服務。
+              Thank you for your support and love for HomeTown. If you have any questions or business cooperation proposals,
+              feel free to send us your feedback and opinions. We will listen carefully and respond as quickly as possible to provide better service.
             </p>
           </div>
 
@@ -22,8 +22,8 @@
                     type="text"
                     class="form-control"
                     :class="classes"
-                    name="姓名"
-                    placeholder="Name 姓名"
+                    name="Name"
+                    placeholder="Name"
                     v-model="form.name"
                   />
                   <span v-if="errors[0]" class="text-danger">{{ errors[0] }}</span>
@@ -35,8 +35,8 @@
                     type="email"
                     class="form-control"
                     :class="classes"
-                    name="信箱"
-                    placeholder="Email 信箱"
+                    name="Email"
+                    placeholder="Email"
                     v-model="form.email"
                   />
                   <span v-if="errors[0]" class="text-danger">{{ errors[0] }}</span>
@@ -48,8 +48,8 @@
                     class="form-control"
                     :class="classes"
                     rows="3"
-                    name="訊息"
-                    placeholder="Message 訊息"
+                    name="Message"
+                    placeholder="Message"
                     v-model="form.message"
                   >
                   </textarea>
@@ -57,7 +57,7 @@
                 </validation-provider>
               </div>
               <div class="form-group text-right mb-0">
-                <button type="button" :disabled="invalid" @click="contactSubmit" class="btn btn-info mx-auto">送出</button>
+                <button type="button" :disabled="invalid" @click="contactSubmit" class="btn btn-info mx-auto">Submit</button>
               </div>
               <input type="reset" style="display:none;" />
             </form>
@@ -69,9 +69,9 @@
         ></div>
       </div>
       <div class="container underLine py-2 text-center">
-        HomeTown Designed by Liz.Lin ⓒ 2020 All Right Reserved. ｜僅個人作品練習，無商業用途
+        HomeTown Designed by Tzu-Yi Lin ⓒ 2025 All Right Reserved. ｜Personal project practice only, no commercial use. <br>
         <router-link to="/login" class="mx-3">
-          <i class="fas fa-user-cog"></i> <u>前往後台</u>
+          <i class="fas fa-user-cog"></i> <u>Admin Login</u>
         </router-link>
       </div>
     </footer>
@@ -84,8 +84,8 @@
             </button>
           </div>
           <div class="modal-body text-center">
-            <div class="h5 text-info font-weight-bold">感謝您的聯繫</div>
-            <div class="h5 text-info font-weight-bold">我們將盡快與您聯絡！</div>
+            <div class="h5 text-info font-weight-bold">Thank you for contacting us</div>
+            <div class="h5 text-info font-weight-bold">We will get back to you as soon as possible!</div>
           </div>
         </div>
       </div>

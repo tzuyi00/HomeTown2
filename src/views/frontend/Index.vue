@@ -2,11 +2,11 @@
   <div class="container-fluid px-0">
     <header :style="{backgroundImage: `url(${img.header})` }">
       <div class="bannerTxt text-center">
-        <div class="txts wow animate__animated animate__fadeInUp">午後閒暇，放下一切束縛</div>
-        <div class="txts wow animate__animated animate__fadeInUp" data-wow-delay="1s">不用去遠方，在家就能優雅渡假</div>
+        <div class="txts wow animate__animated animate__fadeInUp">An Afternoon Escape, Free Yourself</div>
+        <div class="txts wow animate__animated animate__fadeInUp" data-wow-delay="1s">No need to travel far, enjoy a vacation at home</div>
         <router-link to="/products">
           <div class="bannerBtn btn btn-info mt-3 shadow-sm wow animate__animated animate__jello" data-wow-delay="1.8s">
-            選購去
+            Shop Now
             <i class="fas fa-hand-point-up"></i>
           </div>
         </router-link>
@@ -22,19 +22,19 @@
             <h2 class="title">About Us</h2>
             <div class="line mx-auto"></div>
           </div>
-          <div class="h4 mt-4 wow animate__animated animate__fadeInUp" data-wow-delay="0.8s">相信 家會更貼心</div>
+          <div class="h4 mt-4 wow animate__animated animate__fadeInUp" data-wow-delay="0.8s">Creating a Home with Heart</div>
           <div class="h5 mt-3 wow animate__animated animate__fadeInUp" data-wow-delay="1s">
-            我們的初衷
-            <br />是為您打造一個有格調的家
-            <br />簡約而不簡單的造型設計
-            <br />讓家居回歸真摯的美好
+            Our original intention
+            <br />is to create a stylish home for you.
+            <br />Simple yet not Simplistic designs
+            <br />Bringing back the true beauty of home living.
             <br />
           </div>
           <div class="h5 mt-3 wow animate__animated animate__fadeInUp" data-wow-delay="1s">
-            款式多樣 價格透明
-            <br />專業人員為您現場丈量規劃
-            <br />幫您以最少預算
-            <br />打造出濃濃鄉村氣息的幸福居家
+            Wide Variety, Transparent Pricing
+            <br />Professional on-site measurement and planning
+            <br />Helping you build a cozy countryside home
+            <br />with a minimal budget.
           </div>
         </div>
         <div class="order-md-1 col-12 col-md-6 wow animate__animated animate__fadeInLeft">
@@ -55,10 +55,10 @@
             </div>
             <div class="arrTxt">
               <div class="arrInner">
-                <h4>桌子</h4>
-                <p class="text-left mt-3">依照你的需求，挑選可調整桌面高度、活動桌板的書桌或工作桌，讓你讀書、工作都更有效率。</p>
+                <h4>Table</h4>
+                <p class="text-left mt-3">Choose desks or work tables with adjustable heights and movable panels to enhance your study and work efficiency.</p>
                 <router-link to="/products">
-                  <div class="btn btn-info">View Detail</div>
+                  <div class="btn btn-info">View Details</div>
                 </router-link>
               </div>
             </div>
@@ -71,10 +71,10 @@
             </div>
             <div class="arrTxt order-md-1">
               <div class="arrInner">
-                <h4>燈飾</h4>
-                <p class="text-left mt-3">不管是窩在沙發上看電視或是準備晚餐的溫馨過程，點盞燈都可以讓氣氛更舒適，空間更明亮！</p>
+                <h4>Lighting</h4>
+                <p class="text-left mt-3">Whether you're cozying up on the sofa or preparing dinner, the right lighting creates a warm, inviting atmosphere!</p>
                 <router-link to="/products">
-                  <div class="btn btn-info">View Detail</div>
+                  <div class="btn btn-info">View Details</div>
                 </router-link>
               </div>
             </div>
@@ -87,10 +87,10 @@
             </div>
             <div class="arrTxt">
               <div class="arrInner">
-                <h4>椅子</h4>
-                <p class="text-left mt-3">我們知道你有時只想抓本書，享受一個人的時光，因此提供多功能性的椅子，久坐依然舒適。</p>
+                <h4>Chair</h4>
+                <p class="text-left mt-3">We understand you sometimes just want to enjoy a moment alone — our chairs are designed for long-lasting comfort.</p>
                 <router-link to="/products">
-                  <div class="btn btn-info">View Detail</div>
+                  <div class="btn btn-info">View Details</div>
                 </router-link>
               </div>
             </div>
@@ -101,12 +101,12 @@
 
     <div class="middleBg" :style="{backgroundImage: `url(${img.middleBg})` }">
       <div class="middleTxt text-center text-sm-left">
-        <div class="txts wow animate__animated animate__bounceInLeft">尚未獲得周年慶優惠大獎嗎？</div>
-        <div class="text-center d-sm-flex align-items-center justify-content-end">
-          <div class="txts d-block d-sm-inline wow animate__animated animate__bounceInRight" data-wow-delay="1s">快來刮出你的專屬優惠券</div>
+        <div class="txts wow animate__animated animate__bounceInLeft">Haven't Won the Anniversary Grand Prize Yet?</div>
+        <div class="text-center d-sm-flex align-items-center justify-content-center">
+          <div class="txts d-block d-sm-inline wow animate__animated animate__bounceInRight" data-wow-delay="1s">Scratch and reveal your <br> exclusive coupon!</div>
           <router-link to="/coupon">
             <div class="middleBtn btn btn-info ml-sm-3 mt-3 mt-sm-0 shadow-sm wow animate__animated animate__backInUp" data-wow-delay="2s">
-              領獎去
+              Claim Prize
               <i class="fas fa-hand-point-up"></i>
             </div>
           </router-link>
@@ -124,14 +124,14 @@
         <div class="col-12 col-md-6 mt-4 wow animate__animated animate__fadeInUp">
           <router-link to="/product/C0ctzEP4vsNjXCjPxVeE8Mw61nGu1kBJBSju4Qxa7kCxY1tG2NwcVB20JAEKMkXJ">
             <div class="goodWrap" :style="{backgroundImage: `url(${img.good1})` }">
-              <div class="goodTitle">珍愛雙人布沙發</div>
+              <div class="goodTitle">Cherished Double Sofa</div>
               <div class="goodDetail">
-                <h4>珍愛雙人布沙發</h4>
+                <h4>Cherished Double Sofa</h4>
                 <p>
-                  溫暖、舒適、整潔又時尚
-                  <br />椅墊套質感柔軟
-                  <br />線條貼合沙發形狀
-                  <br />賦予實用和美觀完美的平衡
+                  Warm, cozy, clean, and stylish
+                  <br />Soft, quality cushion covers
+                  <br />Contours perfectly to sofa lines
+                  <br />Achieving a balance between functionality and aesthetics
                 </p>
               </div>
             </div>
@@ -140,14 +140,14 @@
         <div class="col-12 col-md-6 mt-4 wow animate__animated animate__fadeInUp" data-wow-delay="1s">
           <router-link to="/product/EUySZ1dDkRzOn7EKKUK1YWGQIHD7nvFfcWvHsYGkmY9mo6MU2Eo3V00Wp7swZWiG">
             <div class="goodWrap" :style="{backgroundImage: `url(${img.good2})` }">
-              <div class="goodTitle">手工唯美桌燈</div>
+              <div class="goodTitle">Elegant Table Lamp</div>
               <div class="goodDetail">
-                <h4>手工唯美桌燈</h4>
+                <h4>Elegant Table Lamp</h4>
                 <p>
-                  靈感來自傳統煤油燈
-                  <br />柔和、溫暖的氣氛照明
-                  <br />轉動圓鈕，就能調整燈光
-                  <br />增添柔和舒適的光線
+                  Inspired by traditional oil lamps
+                  <br />Soft, warm ambient lighting
+                  <br />Adjust brightness by turning the knob
+                  <br />Adds a cozy and gentle glow
                 </p>
               </div>
             </div>
@@ -158,7 +158,7 @@
     <div class="goShopBtn">
       <hr />
       <router-link to="/products">
-        <button class="btn btn-info wow animate__animated animate__jello" data-wow-delay="1s">購物去</button>
+        <button class="btn btn-info wow animate__animated animate__jello" data-wow-delay="1s">Go Shopping</button>
       </router-link>
     </div>
   </div>

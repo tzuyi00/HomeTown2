@@ -11,14 +11,16 @@
         <div class="couponTxt text-center mx-auto">
           <div class="h3 font-weight-bold">
             <i class="fas fa-glass-cheers mr-2"></i>
-            <span>週年慶刮刮樂</span>
+            <span>Anniversary Scratch-off Game</span>
           </div>
-          <div class="h5 mt-3">快來玩刮刮樂遊戲！刮開你個人的專屬優惠大獎，多項折扣等你來拿，不限金額每筆訂單最高享有"五折"大優惠，數量有限送完為止，早買早享受唷！</div>
+          <div class="h5 mt-3">Come play the scratch-off game! Scratch to reveal your exclusive discount prize.
+            Various discounts are waiting for you — enjoy up to "50% off" per order, no minimum spending required!
+            Limited quantity, first come, first served!</div>
         </div>
         <!-- 刮刮樂區塊 -->
         <div class="main mx-auto mt-4 mt-sm-5 text-center">
           <img class="award" :src="award_pic" alt="">
-          <div class="mt-2">結帳時輸入以下序號，即可獲得折扣優惠</div>
+          <div class="mt-2">Apply the code at checkout!</div>
           <div class="coupon mt-3 d-flex justify-content-center align-items-center">
             <input id="input_code" type="text" readonly v-model="discount_code"/>
             <div class="btn btn-outline-info"
@@ -30,8 +32,8 @@
             </div>
           </div>
           <div class="mt-3">
-            不甘心結果嗎<i class="fas fa-hand-point-right mx-2"></i>
-            <div class="btn btn-outline-info btn-sm" @click="reload">再玩一次</div>
+            Not satisfied with the result?<i class="fas fa-hand-point-right mx-2"></i>
+            <div class="btn btn-outline-info btn-sm" @click="reload">Play Again</div>
           </div>
           <canvas id="myCanvas" style="position: absolute;top:0; left: 0; z-index: 1000;"></canvas>
         </div>
@@ -73,7 +75,7 @@ export default {
       location.reload()
     },
     clipboard () {
-      this.$bus.$emit('message:push', '已複製序號，快去購物吧！', 'success')
+      this.$bus.$emit('message:push', 'Code copied! Go shopping now!', 'success')
     },
     scratchInit () {
       const myCanvas = document.getElementById('myCanvas')

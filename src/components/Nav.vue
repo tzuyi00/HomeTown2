@@ -10,13 +10,13 @@
         <li class="nav-item">
           <router-link to="/products" class="nav-link text-center">
             <i class="fas fa-couch mr-1"></i>
-            <span class="d-block d-sm-inline">家具列表</span>
+            <span class="d-block d-sm-inline">Product List</span>
           </router-link>
         </li>
         <li class="nav-item">
           <router-link to="/coupon" class="nav-link text-center">
             <i class="fas fa-money-bill-wave mr-1"></i>
-            <span class="d-block d-sm-inline">優惠活動</span>
+            <span class="d-block d-sm-inline">Promotions</span>
           </router-link>
         </li>
       </ul>
@@ -30,7 +30,7 @@
           >
             <i class="fa fa-shopping-cart" :class="{ ml2: cart.length >= '1' }"></i>
             <span class="badge badge-pill badge-danger" v-if="cart.length">{{cart.length}}</span>
-            <span class="d-block d-sm-none">購物車</span>
+            <span class="d-block d-sm-none">Cart</span>
           </a>
           <div
             class="dropdown-menu dropdown-menu-right text-center"
@@ -38,16 +38,16 @@
           >
             <!-- 未購物 -->
             <div v-if="!cart.length ">
-              <h5 class="itemTitle my-2">您尚未選擇商品</h5>
+              <h5 class="itemTitle my-2">No items selected</h5>
               <router-link to="/products" class>
                 <button class="btn btn-info mt-1">
-                  <i class="fas fa-couch"></i> 先去選購吧
+                  <i class="fas fa-couch"></i> Browse Products
                 </button>
               </router-link>
             </div>
             <!-- 有商品 -->
             <div v-if="cart.length">
-              <h5 class="itemTitle text-center my-2">已選擇商品</h5>
+              <h5 class="itemTitle text-center my-2">Selected Items</h5>
               <div class="cart-scroll">
                 <table class="itemContent">
                   <tbody class="d-flex justify-content-start align-items-center flex-column">
@@ -67,12 +67,12 @@
               </div>
               <div class="totalInfo">
                 <p>
-                  小計
+                  Subtotal
                   <span class="text-info h4 ml-5">{{ cartTotal | currency }}</span>
                 </p>
                 <router-link to="/cart" class="payBtn">
                   <button class="btn btn-info">
-                    <i class="fa fa-shopping-cart"></i> 結帳去
+                    <i class="fa fa-shopping-cart"></i> Checkout
                   </button>
                 </router-link>
               </div>
@@ -106,7 +106,7 @@ export default {
   },
   methods: {
     getCart () {
-      this.isLoading = true
+      // this.isLoading = true
       const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/shopping`
 
       this.$http.get(url).then((response) => {
@@ -132,13 +132,13 @@ export default {
 
       this.$http.post(url, cart).then((response) => {
         this.getCart()
-        this.$bus.$emit('message:push', `"${response.data.data.product.title}" 已成功放入購物車！`, 'success')
+        this.$bus.$emit('message:push', `"${response.data.data.product.title}" has been added to the cart successfully!`, 'success')
       }).catch((error) => {
-        this.$bus.$emit('message:push', `${error.response.data.errors[0]}可直接去結帳囉~`, 'info')
+        this.$bus.$emit('message:push', `${error.response.data.errors[0]}You can proceed to checkout directly~`, 'info')
       })
     },
     removeCartItem (id) {
-      this.isLoading = true
+      // this.isLoading = true
       const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/shopping/${id}`
 
       this.$http.delete(url).then((response) => {
