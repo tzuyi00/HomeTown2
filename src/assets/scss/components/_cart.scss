@@ -8,13 +8,14 @@
 }
 
 .stepGroup {
-  width: 400px;
+  width: 450px;
 
   .stepBox {
     padding: 14px 30px;
     font-size: 16px;
     border-radius: 3px;
     color: $primdark;
+    width: 160px;
 
     .num {
       background-color: $primdark;

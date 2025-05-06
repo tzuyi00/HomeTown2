@@ -3,7 +3,7 @@
     <loading :active.sync="isLoading"></loading>
     <div class="banner" :style="{backgroundImage: `url(${img.banner})` }">
       <div class="bannerTitle">
-        <h1>購物流程</h1>
+        <h1>Checkout Process</h1>
       </div>
     </div>
     <div class="container section960">
@@ -11,24 +11,24 @@
         <div class="stepGroup d-flex justify-content-between mx-auto my-5 text-center">
           <div class="stepBox current">
             <div class="num mx-auto h5">1</div>
-            購物車
+            Cart
           </div>
           <div class="stepBox">
             <div class="num mx-auto h5">2</div>
-            填寫資料
+            Fill Information
           </div>
           <div class="stepBox">
             <div class="num mx-auto h5">3</div>
-            訂單確認
+            Order Confirmation
           </div>
         </div>
         <table class="table cartTable">
           <thead>
             <tr>
-              <th scope="col" class="thPicture pl-4">圖示</th>
-              <th scope="col" class="thName">商品名稱</th>
-              <th scope="col">數量</th>
-              <th scope="col">單價</th>
+                <th scope="col" class="thPicture pl-4">Image</th>
+              <th scope="col" class="thName">Product Name</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Price</th>
               <th scope="col" class="thTrash"></th>
             </tr>
           </thead>
@@ -70,31 +70,31 @@
         </table>
 
         <div class="input-group d-flex align-items-center justify-content-end">
-          <span class="mr-3">使用優惠券</span>
-          <input v-model="coupon_code"  @keyup.enter="addCoupon" type="text" class="couponInput form-control" placeholder="輸入優惠券序號" />
+          <span class="mr-3">Use Coupon</span>
+          <input v-model="coupon_code"  @keyup.enter="addCoupon" type="text" class="couponInput form-control" placeholder="Enter coupon code" />
           <div class="input-group-append">
-            <button class="btn btn-outline-primary couponBtn" type="button" @click="addCoupon" :disabled="!coupon_code">套用</button>
+            <button class="btn btn-outline-primary couponBtn" type="button" @click="addCoupon" :disabled="!coupon_code">Apply</button>
           </div>
         </div>
 
         <table class="table totalInfo ml-auto mt-3">
           <tbody>
             <tr>
-              <td>總計金額</td>
+              <td>Total Amount</td>
               <td class="text-right text-info">NT {{ cartTotal  | currency}}</td>
             </tr>
             <tr v-if="coupon.enabled">
-              <td>優惠折抵</td>
+              <td>Discount</td>
               <td class="text-right">- NT {{ cartTotal - cartTotal * (coupon.percent / 100)  | currency}}</td>
             </tr>
             <tr v-if="coupon.enabled">
-              <td>應付金額</td>
+              <td>Amount Due</td>
               <td class="text-right text-danger">NT {{ cartTotal * (coupon.percent / 100)  | currency}}</td>
             </tr>
           </tbody>
         </table>
         <button class="btn btn-info d-block ml-auto" @click="changePage()">
-          <i class="fas fa-shopping-bag"></i> 確認購買
+          <i class="fas fa-shopping-bag"></i> Confirm Purchase
         </button>
       </div>
 
@@ -102,21 +102,21 @@
         <div class="stepGroup d-flex justify-content-between mx-auto my-5 text-center">
           <div class="stepBox">
             <div class="num mx-auto h5">1</div>
-            購物車
+            Cart
           </div>
           <div class="stepBox current">
             <div class="num mx-auto h5">2</div>
-            填寫資料
+            Fill Information
           </div>
           <div class="stepBox">
             <div class="num mx-auto h5">3</div>
-            訂單確認
+            Order Confirmation
           </div>
         </div>
         <table class="table paymentTable mt-5">
           <thead>
             <tr>
-              <th colspan="4">購買清單</th>
+              <th colspan="4">Purchase List</th>
             </tr>
           </thead>
           <tbody>
@@ -131,11 +131,11 @@
           </tbody>
           <tfoot>
             <tr v-if="coupon.enabled">
-              <td colspan="3" class="text-right py-3">優惠折抵</td>
+              <td colspan="3" class="text-right py-3">Discount</td>
               <td class="text-right">- NT {{ cartTotal - cartTotal * (coupon.percent / 100)  | currency}}</td>
             </tr>
             <tr>
-              <td colspan="3" class="text-right" :class="{ isCoupon: coupon.enabled }">總計</td>
+              <td colspan="3" class="text-right" :class="{ isCoupon: coupon.enabled }">Total</td>
               <td v-if="!coupon.enabled" class="text-right text-danger"  :class="{ isCoupon: coupon.enabled }">NT {{ cartTotal  | currency}}</td>
               <td v-if="coupon.enabled" class="text-right text-danger"  :class="{ isCoupon: coupon.enabled }">NT {{ cartTotal * (coupon.percent / 100)  | currency}}</td>
             </tr>
@@ -143,13 +143,13 @@
         </table>
 
         <validation-observer v-slot="{ invalid }">
-          <div class="orderTitle mt-5 font-weight-bold">訂單資訊</div>
+            <div class="orderTitle mt-5 font-weight-bold">Order Information</div>
           <form class="infoArea" @submit.prevent="createOrder">
             <div class="form-row userInfo">
               <div class="form-group col-sm-6">
                 <validation-provider v-slot="{ errors, classes }" rules="required">
                   <label for="userName">
-                    收件人姓名
+                    Recipient Name
                     <span class="text-danger">*</span>
                   </label>
                   <input
@@ -157,7 +157,7 @@
                     name="姓名"
                     v-model="form.name"
                     type="text"
-                    placeholder="請輸入姓名"
+                    placeholder="Please enter your name"
                     class="form-control"
                     :class="classes"
                   />
@@ -167,7 +167,7 @@
               <div class="form-group col-sm-6">
                 <validation-provider v-slot="{ errors, classes }" rules="required|min:8">
                   <label for="usertel">
-                    收件人手機
+                    Phone
                     <span class="text-danger">*</span>
                   </label>
                   <input
@@ -188,7 +188,7 @@
               <div class="form-group col-sm-6">
                 <validation-provider v-slot="{ errors, classes }" rules="required|email">
                   <label for="userEmail">
-                    收件人Email
+                    Email
                     <span class="text-danger">*</span>
                   </label>
                   <input
@@ -196,7 +196,7 @@
                     name="Email"
                     v-model="form.email"
                     type="email"
-                    placeholder="請輸入Email"
+                    placeholder="Please enter your Email"
                     class="form-control"
                     :class="classes"
                   />
@@ -206,7 +206,7 @@
               <div class="form-group col-sm-6">
                 <validation-provider v-slot="{ errors, classes }" rules="required">
                   <label for="payment">
-                    付款方式
+                    Payment Method
                     <span class="text-danger">*</span>
                   </label>
                   <select
@@ -230,7 +230,7 @@
             <div class="form-group">
               <validation-provider v-slot="{ errors, classes }" rules="required">
                 <label for="userAddress">
-                  收件人地址
+                  Address
                   <span class="text-danger">*</span>
                 </label>
                 <input
@@ -238,7 +238,7 @@
                   name="地址"
                   v-model="form.address"
                   type="text"
-                  placeholder="請輸入地址"
+                  placeholder="Please enter your address"
                   class="form-control"
                   :class="classes"
                 />
@@ -246,7 +246,7 @@
               </validation-provider>
             </div>
             <div class="form-group mb-5">
-              <label for="message">備註</label>
+              <label for="message">Note</label>
               <textarea
                 id="message"
                 name="message"
@@ -257,12 +257,12 @@
               ></textarea>
             </div>
             <button type="submit" :disabled="invalid" class="btn btn-info d-block ml-auto">
-              <i class="fas fa-clipboard-check"></i> 完成訂單
+                <i class="fas fa-clipboard-check"></i> Place Order
             </button>
           </form>
         </validation-observer>
-        <button type="botton" class="btn btn-primary mt-3" @click="goBack()">
-          <i class="fas fa-angle-left"></i> 回上一步
+        <button type="button" class="btn btn-primary mt-3" @click="goBack()">
+          <i class="fas fa-angle-left"></i> Back to Previous Step
         </button>
       </div>
     </div>
@@ -333,9 +333,9 @@ export default {
     */
     quantityUpdata (id, num) {
       if (num > 10) {
-        this.$bus.$emit('message:push', '數量不可超過10喔!', 'info')
+        this.$bus.$emit('message:push', 'Maximum quantity is 10!', 'info')
       } else if (num < 1) {
-        this.$bus.$emit('message:push', '數量不可低於1喔!', 'info')
+        this.$bus.$emit('message:push', 'Minimum quantity is 1!', 'info')
       } else {
         this.isLoading = true
         const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/shopping`
@@ -407,7 +407,7 @@ export default {
 
         errorData.forEach((err) => {
           this.$bus.$emit('message:push',
-            `建立訂單失敗惹，好糗Σ( ° △ °|||)︴
+            `Failed to create order. Please try again
           ${err}`,
             'info')
         })

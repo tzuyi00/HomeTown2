@@ -2,14 +2,14 @@
 ![index](https://user-images.githubusercontent.com/42172767/93883609-62623d00-fd14-11ea-8c4b-34e180ecba08.jpg)
 
 ## Demo
-[text](https://home-town2.vercel.app)
+[https://home-town2.vercel.app](https://home-town2.vercel.app)
 
 ## Technologies Used
 * Vue CLI
 * Vue Router
 * Vue Components
 * Webpack
-* API
+* RESTful API
 * axios
 * JavaScript (ES6)
 * ESlint

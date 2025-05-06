@@ -106,7 +106,7 @@ export default {
   },
   methods: {
     getCart () {
-      // this.isLoading = true
+      this.isLoading = true
       const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/shopping`
 
       this.$http.get(url).then((response) => {
@@ -138,7 +138,7 @@ export default {
       })
     },
     removeCartItem (id) {
-      // this.isLoading = true
+      this.isLoading = true
       const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/shopping/${id}`
 
       this.$http.delete(url).then((response) => {

@@ -3,16 +3,16 @@
     <loading :active.sync="isLoading"></loading>
     <div class="banner" :style="{backgroundImage: `url(${img.banner})` }">
       <div class="bannerTitle">
-        <h1>產品介紹</h1>
+        <h1>Product Detail</h1>
       </div>
     </div>
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb mt-3 pl-sm-5">
         <li class="breadcrumb-item">
-          <router-link to="/">首頁</router-link>
+          <router-link to="/">Home</router-link>
         </li>
         <li class="breadcrumb-item">
-          <router-link to="/products">家具列表</router-link>
+          <router-link to="/products">Product List</router-link>
         </li>
         <li class="breadcrumb-item active" aria-current="page">{{ product.title }}</li>
       </ol>
@@ -30,7 +30,7 @@
             <h3 class="">{{ product.title }}</h3>
             <div class="line"></div>
             <div class="descript mt-4">
-              <h6 class="disTitle">【產品說明】</h6>
+              <h6 class="disTitle">【Product Description】</h6>
               <p class="">{{ product.description }}</p>
             </div>
             <hr>
@@ -54,13 +54,13 @@
               </button>
             </div>
             <button class="addCart btn btn-info mt-4 px-3" @click="updateCart(product,productNum)">
-              <i class="fa fa-shopping-cart"></i> 加入購物車
+              <i class="fa fa-shopping-cart"></i> Add to Cart
             </button>
           </div>
         </div>
       </div>
       <div class="referPro mt-5">
-        <h4 class="text-center">相關產品</h4>
+        <h4 class="text-center">Related Products</h4>
         <div class="line mx-auto"></div>
         <div class="row mt-5">
           <div v-for="item in selectedProducts" :key="item.id" class="col-xl-3 col-lg-4 col-sm-6" @click="getProduct(), getRelatedProducts()">
@@ -168,10 +168,10 @@ export default {
     changeNumber (num) {
       if (num >= 10) {
         this.productNum = 10
-        this.$bus.$emit('message:push', '數量不可超過10喔!', 'info')
+        this.$bus.$emit('message:push', 'Maximum quantity is 10!', 'info')
       } else if (num <= 1) {
         this.productNum = 1
-        this.$bus.$emit('message:push', '數量不可低於1喔!', 'info')
+        this.$bus.$emit('message:push', 'Minimum quantity is 1!', 'info')
       } else {
         this.productNum = num
       }

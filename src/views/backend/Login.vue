@@ -10,7 +10,7 @@
       </router-link>
       <div class="card" style="width: 340px;">
         <div class="card-body">
-          <div class="h5 text-center"> <strong>後台登入</strong> </div>
+            <div class="h5 text-center"> <strong>Backend Login</strong> </div>
 
           <div class="p-3">
             <form @submit.prevent="signin">
@@ -19,15 +19,15 @@
                   <div class="input-group-prepend">
                     <span class="input-group-text input-icon" style="background-color: transparent;"><i class="fas fa-envelope fa-lg"></i></span>
                   </div>
-                  <input id="inputEmail" v-model="user.email" type="email" class="form-control" placeholder="請輸入Email" required autofocus>
+                  <input id="inputEmail" v-model="user.email" type="email" class="form-control" placeholder="Email" required autofocus>
                 </div>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text input-icon" style="background-color: transparent;"><i class="fas fa-lock fa-lg"></i></span>
                   </div>
-                  <input id="inputPassword" v-model="user.password" type="password" class="form-control" placeholder="請輸入密碼" required>
+                  <input id="inputPassword" v-model="user.password" type="password" class="form-control" placeholder="Password" required>
                 </div>
-                <button type="submit" class="btn btn-block btn-outline-info w-75 mx-auto mt-4">登入</button>
+                <button type="submit" class="btn btn-block btn-outline-info w-75 mx-auto mt-4">Login</button>
               </div>
             </form>
           </div>
@@ -60,12 +60,12 @@ export default {
         // 將資料存入cookie
         document.cookie = `lizToken=${token}; expires=${new Date(expired * 1000)};`
 
-        this.$bus.$emit('message:push', '登入成功 ヾ(●゜▽゜●)♡', 'success')
+        this.$bus.$emit('message:push', 'Login successful ヾ(●゜▽゜●)♡', 'success')
 
         this.$router.push('admin/products')
       }).catch(() => {
         this.$bus.$emit('message:push',
-          '登入失敗，好糗 Σ( ° △ °|||)︴ ',
+          'Login failed, please try again Σ( ° △ °|||)︴ ',
           'info')
       })
     }

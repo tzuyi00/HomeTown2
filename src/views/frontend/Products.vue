@@ -70,7 +70,7 @@ export default {
     }
   },
   created () {
-    // this.isLoading = true
+    this.isLoading = true
     this.getProducts()
   },
   methods: {
@@ -90,16 +90,16 @@ export default {
           this.newProducts = this.products
           break
         case 'table':
-          this.newProducts = this.products.filter((item) => item.category === 'Tables')
+          this.newProducts = this.products.filter((item) => item.category === '桌子')
           break
         case 'chair':
-          this.newProducts = this.products.filter((item) => item.category === 'Chairs')
+          this.newProducts = this.products.filter((item) => item.category === '椅子')
           break
         case 'sofa':
-          this.newProducts = this.products.filter((item) => item.category === 'Sofas')
+          this.newProducts = this.products.filter((item) => item.category === '沙發')
           break
         case 'lamp':
-          this.newProducts = this.products.filter((item) => item.category === 'Lamps')
+          this.newProducts = this.products.filter((item) => item.category === '燈飾')
           break
         default:
           break

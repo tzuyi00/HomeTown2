@@ -3,28 +3,28 @@
     <loading :active.sync="isLoading"></loading>
     <div class="banner" :style="{backgroundImage: `url(${img.banner})` }">
       <div class="bannerTitle">
-        <h1>訂單完成</h1>
+        <h1>Order Completed</h1>
       </div>
     </div>
     <div class="container section960 mt-5">
       <div class="stepGroup d-flex justify-content-between mx-auto my-5 text-center">
         <div class="stepBox">
           <div class="num mx-auto h5">1</div>
-          購物車
+          Cart
         </div>
         <div class="stepBox">
           <div class="num mx-auto h5">2</div>
-          填寫資料
+          Fill Information
         </div>
         <div class="stepBox current">
           <div class="num mx-auto h5">3</div>
-          訂單確認
+          Order Confirmation
         </div>
       </div>
       <table class="table paymentTable mt-5">
         <thead>
           <tr>
-            <th colspan="4">購買清單</th>
+            <th colspan="4">Purchase List</th>
           </tr>
         </thead>
         <tbody>
@@ -39,11 +39,11 @@
         </tbody>
         <tfoot>
           <tr v-if="order.coupon">
-            <td colspan="3" class="text-right py-3">優惠折抵</td>
+            <td colspan="3" class="text-right py-3">Discount</td>
             <td class="text-right">- NT {{ (order.amount*(100/order.coupon.percent)) - (order.amount*(100/order.coupon.percent)) * (order.coupon.percent / 100)  | currency}}</td>
           </tr>
           <tr>
-            <td colspan="3" class="text-right" :class="{ isCoupon: order.coupon }">總計</td>
+            <td colspan="3" class="text-right" :class="{ isCoupon: order.coupon }">Total</td>
             <td class="text-right text-danger" :class="{ isCoupon: order.coupon }">{{ order.amount  | currency}}</td>
           </tr>
         </tfoot>
@@ -52,47 +52,47 @@
       <table class="table orderOkTable mt-5">
         <thead>
           <tr>
-            <th colspan="2">訂單資訊</th>
+            <th colspan="2">Order Information</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td width="150px">收件人姓名：</td>
+            <td width="150px">Recipient Name:</td>
             <td>{{ order.user.name }}</td>
           </tr>
           <tr>
-            <td>收件人手機：</td>
+            <td>Phone:</td>
             <td>{{ order.user.tel }}</td>
           </tr>
           <tr>
-            <td>收件人Email：</td>
+            <td>Email:</td>
             <td>{{ order.user.email }}</td>
           </tr>
           <tr>
-            <td>付款方式：</td>
+            <td>Payment Method:</td>
             <td>{{ order.payment }}</td>
           </tr>
           <tr>
-            <td>收件人地址：</td>
+            <td>Address:</td>
             <td>{{ order.user.address }}</td>
           </tr>
           <tr>
-            <td>備註：</td>
+            <td>Notes:</td>
             <td>{{ order.message }}</td>
           </tr>
           <tr>
-            <td>付款狀態：</td>
-            <td v-if="!order.paid" class="h5 text-danger">尚未付款</td>
-            <td v-if="order.paid" class="h5 text-info">已付款</td>
+            <td>Payment Status:</td>
+            <td v-if="!order.paid" class="h5 text-danger">Unpaid</td>
+            <td v-if="order.paid" class="h5 text-info">Paid</td>
           </tr>
         </tbody>
       </table>
       <button v-if="!order.paid" @click="payOrder()" type="button" class="btn btn-info d-block mx-auto mt-5">
-        <i class="fas fa-clipboard-check"></i> 確認付款
+        <i class="fas fa-clipboard-check"></i> Confirm Payment
       </button>
       <router-link to="/products">
         <button v-if="order.paid" type="button" class="btn btn-primary d-block mx-auto mt-5">
-          <i class="fas fa-couch"></i> 繼續選購
+          <i class="fas fa-couch"></i> Continue Shopping
         </button>
       </router-link>
     </div>
@@ -106,8 +106,8 @@
             </button>
           </div>
           <div class="modal-body text-center">
-            <div class="h5 text-info font-weight-bold">恭喜您</div>
-            <div class="h5 text-info font-weight-bold">付款成功</div>
+            <div class="h5 text-info font-weight-bold">Congratulations</div>
+            <div class="h5 text-info font-weight-bold">Payment Successful</div>
           </div>
         </div>
       </div>
