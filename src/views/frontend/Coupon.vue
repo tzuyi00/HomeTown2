@@ -178,10 +178,10 @@ export default {
       // 判斷折價金額所顯示的序號
       switch (arr[2]) {
         case '9':
-          this.discount_code = 'home90'
+          this.discount_code = 'home10'
           break
         case '8':
-          this.discount_code = 'home80'
+          this.discount_code = 'home20'
           break
         case '5':
           this.discount_code = 'home50'
