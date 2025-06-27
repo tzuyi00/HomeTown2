@@ -30,14 +30,14 @@
 * [Font Awesome](https://fontawesome.com/)
 
 ## Website Structure
-This project simulates an e-commerce site built with Vue.js, divided into frontend and backend sections:
-* Frontend
-  * Home - About Us and product overview
-  * Product List - Filter by category, add to cart
-  * Product Detail - Select quantity, add to cart, view related products
-  * Promotions - Play a scratch-off game to win discount codes
-  * Shopping Cart & Checkout - Review cart items, apply discount codes, fill out order forms
-  * Order Completion - Finalize orders
+This project simulates an e-commerce site built with Vue.js:
+<!-- * Frontend -->
+* Home - About Us and product overview
+* Product List - Filter by category, add to cart
+* Product Detail - Select quantity, add to cart, view related products
+* Promotions - Play a scratch-off game to win discount codes
+* Shopping Cart & Checkout - Review cart items, apply discount codes, fill out order forms
+* Order Completion - Finalize orders
 <!-- * Backend
   * Admin Login
   * Product Management - Create, delete, edit products
