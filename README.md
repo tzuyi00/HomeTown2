@@ -38,12 +38,12 @@ This project simulates an e-commerce site built with Vue.js, divided into fronte
   * Promotions - Play a scratch-off game to win discount codes
   * Shopping Cart & Checkout - Review cart items, apply discount codes, fill out order forms
   * Order Completion - Finalize orders
-* Backend
+<!-- * Backend
   * Admin Login
   * Product Management - Create, delete, edit products
   * Coupon Management - Create, delete, edit coupons
   * Order Management - View and modify orders
-  * Image Management - Upload and delete images
+  * Image Management - Upload and delete images -->
   
 ## Frontend Features
 ### Home
