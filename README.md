@@ -88,11 +88,11 @@ This project simulates an e-commerce site built with Vue.js, divided into fronte
 ![下單](https://user-images.githubusercontent.com/42172767/93671578-b253c080-fad6-11ea-913e-8a34cda83122.gif)
 
 
-## Backend Features
+<!-- ## Backend Features
 * Admin login and logout
 * Product, coupon, order, and image management
 
-![後台介紹](https://user-images.githubusercontent.com/42172767/93671677-a61c3300-fad7-11ea-84c2-232092eb2eb0.gif)
+![後台介紹](https://user-images.githubusercontent.com/42172767/93671677-a61c3300-fad7-11ea-84c2-232092eb2eb0.gif) -->
 
 ## Disclaimer
 * Image Sources: [Unsplash](https://unsplash.com/)
