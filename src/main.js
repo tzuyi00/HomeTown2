@@ -57,6 +57,9 @@ Vue.prototype.Clipboard = clipboard
 
 new WOW({ live: true }).init()
 
+// 建立一個 Vue 的物件實體
+// 指定渲染的根元件為 App.vue
+// 透過 $mount 掛載至指定的網頁節點
 new Vue({
   router,
   render: h => h(App)

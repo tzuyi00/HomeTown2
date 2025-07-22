@@ -334,23 +334,38 @@ export default {
     quantityUpdata (id, num) {
       if (num > 10) {
         this.$bus.$emit('message:push', 'Maximum quantity is 10!', 'info')
-      } else if (num < 1) {
-        this.$bus.$emit('message:push', 'Minimum quantity is 1!', 'info')
-      } else {
-        this.isLoading = true
-        const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/shopping`
-
-        const data = {
-          product: id,
-          quantity: num
+        // 修正數量為 10
+        num = 10
+        const item = Array.isArray(this.cart) ? this.cart.find(item => item.product.id === id) : null
+        if (item) {
+          item.quantity = 10
         }
-
-        this.$http.patch(url, data).then(() => {
-          this.isLoading = false
-          this.$bus.$emit('nav-getCart')
-          this.getCart()
-        })
       }
+      if (num < 1) {
+        this.$bus.$emit('message:push', 'Minimum quantity is 1!', 'info')
+        // 修正數量為 1
+        num = 1
+        const item = Array.isArray(this.cart) ? this.cart.find(item => item.product.id === id) : null
+        if (item) {
+          item.quantity = 1
+        }
+      }
+      this.isLoading = true
+      const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/shopping`
+
+      const data = {
+        product: id,
+        quantity: num
+      }
+
+      this.$http.patch(url, data).then(() => {
+        this.isLoading = false
+        this.$bus.$emit('nav-getCart')
+        this.getCart()
+      }).catch((error) => {
+        this.isLoading = false
+        console.error(error)
+      })
     },
     /**
      * 刪除某一筆購物車資料

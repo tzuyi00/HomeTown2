@@ -55,8 +55,6 @@ export default {
       discount_code: '12345',
       copyBtn: null, // 儲存初始化複製按鈕事件
       img: {
-        banner:
-          'https://hexschool-api.s3.us-west-2.amazonaws.com/custom/HYMjBNd1w2pIbmbPkhzBETIPArFvCdK1hbyk8ug7kQOcTNQQ6Htwffj3G7alDUPIW7ZnJloorvHNYWIBrv1y27DwbZtUCbaQ7ozv3QeG8TEU2HRpbbxx6ZS68xNiU5VO.jpg',
         disBgL:
           require('@/assets/img/disBgL.png'),
         disBgR:
@@ -68,11 +66,19 @@ export default {
   mounted () {
     this.scratchInit()
     this.copyBtn = new this.Clipboard(this.$refs.copy)
+    window.addEventListener('resize', this.handleResize)
+  },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.handleResize)
   },
   methods: {
+    handleResize () {
+      this.scratchInit()
+    },
     reload () {
-      // this.$router.go(0)
-      location.reload()
+      // location.reload()
+      this.scratchInit()
+      $('#myCanvas').show() // 重新顯示 canvas
     },
     clipboard () {
       this.$bus.$emit('message:push', 'Code copied! Go shopping now!', 'success')
@@ -118,25 +124,25 @@ export default {
         const y = device ? event.touches[0].pageY - rect.y : event.offsetY
 
         can.beginPath()
-        can.globalCompositeOperation = 'destination-out'
-        can.arc(x, y, 20, 0, Math.PI * 2, false)
+        can.globalCompositeOperation = 'destination-out' // 畫過的地方變透明
+        can.arc(x, y, 20, 0, Math.PI * 2, false) // 在 (x, y) 畫一個半徑 20 的圓
         can.fill()
         can.closePath()
       }
 
       // 扣除到一定程度,自己打开
       document.addEventListener(endEvtName, function () {
-        /* 获取imageData对象 */
-        const imageDate = can.getImageData(0, 0, myCanvas.width, myCanvas.height)
+        /* 獲取imageData对象 */
+        const imageData = can.getImageData(0, 0, myCanvas.width, myCanvas.height)
 
         // 所有像素點數
-        const allPX = imageDate.width * imageDate.height
+        const allPX = imageData.width * imageData.height
 
         // 刮开的像素点个数
         let iNum = 0
 
         for (let i = 0; i < allPX; i++) {
-          if (imageDate.data[i * 4 + 3] === 0) {
+          if (imageData.data[i * 4 + 3] === 0) {
             iNum++
           }
         }
@@ -162,28 +168,18 @@ export default {
       // 打亂陣列重新排列
       shuffle(arr)
 
-      // 放入獎項文字
+      // 放入獎項文字 & 折價金額所顯示的序號
       switch (arr[2]) {
         case '9':
           this.award_pic = require('../../assets/img/dis9.png')
-          break
-        case '8':
-          this.award_pic = require('../../assets/img/dis8.png')
-          break
-        case '5':
-          this.award_pic = require('../../assets/img/dis5.png')
-          break
-      };
-
-      // 判斷折價金額所顯示的序號
-      switch (arr[2]) {
-        case '9':
           this.discount_code = 'home10'
           break
         case '8':
+          this.award_pic = require('../../assets/img/dis8.png')
           this.discount_code = 'home20'
           break
         case '5':
+          this.award_pic = require('../../assets/img/dis5.png')
           this.discount_code = 'home50'
           break
       };

@@ -169,7 +169,7 @@ export default {
       if (num >= 10) {
         this.productNum = 10
         this.$bus.$emit('message:push', 'Maximum quantity is 10!', 'info')
-      } else if (num <= 1) {
+      } else if (num < 1) {
         this.productNum = 1
         this.$bus.$emit('message:push', 'Minimum quantity is 1!', 'info')
       } else {
