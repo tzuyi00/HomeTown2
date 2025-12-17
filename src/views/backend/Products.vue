@@ -111,14 +111,34 @@ export default {
     this.getProducts()
   },
   methods: {
-    getProducts (page = 1) {
-      const api = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/ec/products?page=${page}&paged=20`
+    async getProducts (page = 1) {
+      try {
+        this.isLoading = true
+        const pageSize = 20
+        const from = (page - 1) * pageSize
+        const to = from + pageSize - 1
 
-      this.$http.get(api).then((response) => {
+        // 從 Supabase 獲取所有產品 (包括已停用的，因為這是後台管理頁面)
+        const { data, error, count } = await this.$supabase
+          .from('products')
+          .select('*', { count: 'exact' })
+          .range(from, to)
+
+        if (error) throw error
+
+        this.products = data
+        this.pagination = {
+          total: count,
+          current_page: page,
+          per_page: pageSize,
+          last_page: Math.ceil(count / pageSize)
+        }
         this.isLoading = false
-        this.products = response.data.data // 取得產品列表
-        this.pagination = response.data.meta.pagination // 取得分頁資訊
-      })
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        this.$bus.$emit('message:push', `Failed to fetch products: ${error.message}`, 'info')
+        this.isLoading = false
+      }
     },
     openModal (modalStatus, item) {
       switch (modalStatus) {
@@ -130,14 +150,8 @@ export default {
         }
         case 'edit': {
           this.loadingBtn = item.id // 當loadingBtn = item.id時顯示loading畫面
-          const api = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/ec/product/${item.id}`
-          this.$http.get(api).then((res) => {
-            this.tempProduct = res.data.data // 取得成功後回寫到 tempProduct
-            $('#productModal').modal('show') // 確保資料已經回寫後再打開 Modal
-            this.loadingBtn = '' // 清除loading畫面
-          }).catch(() => {
-          })
-          this.isNew = false// 切換狀態為 false 代表編輯
+          this.fetchProductDetail(item.id)
+          this.isNew = false // 切換狀態為 false 代表編輯
           break
         }
         case 'delete': {
@@ -148,6 +162,25 @@ export default {
         default: {
           break
         }
+      }
+    },
+    async fetchProductDetail (productId) {
+      try {
+        const { data, error } = await this.$supabase
+          .from('products')
+          .select('*')
+          .eq('id', productId)
+          .single()
+
+        if (error) throw error
+
+        this.tempProduct = data // 取得成功後回寫到 tempProduct
+        $('#productModal').modal('show') // 確保資料已經回寫後再打開 Modal
+        this.loadingBtn = '' // 清除loading畫面
+      } catch (error) {
+        console.error('Error fetching product detail:', error)
+        this.$bus.$emit('message:push', 'Failed to load product details', 'info')
+        this.loadingBtn = ''
       }
     }
   }

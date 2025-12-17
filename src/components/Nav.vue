@@ -105,16 +105,52 @@ export default {
     })
   },
   methods: {
-    getCart () {
-      this.isLoading = true
-      const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/shopping`
+    async getCart () {
+      try {
+        this.isLoading = true
 
-      this.$http.get(url).then((response) => {
-        this.cart = response.data.data
-        // 購物車金額拉出來重新計算，不然刪除時會出錯造成累加
+        const user = this.$supabase.auth.user()
+
+        if (!user) {
+          // 未登入：從 localStorage 讀取購物車
+          const localCart = localStorage.getItem('cart')
+          this.cart = localCart ? JSON.parse(localCart) : []
+          this.updateTotal()
+          this.isLoading = false
+          return
+        }
+
+        const { data, error } = await this.$supabase
+          .from('cart_items')
+          .select(`
+            id,
+            product_id,
+            quantity,
+            products:product_id (id, title, price, imageUrl)
+          `)
+          .eq('user_id', user.id)
+
+        if (error) throw error
+
+        // 轉換格式以相容原本的前端代碼
+        this.cart = data.map(item => ({
+          id: item.id,
+          product: {
+            id: item.products.id,
+            title: item.products.title,
+            price: item.products.price,
+            imageUrl: item.products.imageUrl
+          },
+          quantity: item.quantity
+        }))
+
         this.updateTotal()
         this.isLoading = false
-      })
+      } catch (error) {
+        console.error('Error fetching cart:', error)
+        this.cart = []
+        this.isLoading = false
+      }
     },
     updateTotal () {
       this.cartTotal = 0
@@ -122,30 +158,115 @@ export default {
         this.cartTotal += item.product.price * item.quantity
       })
     },
-    addToCart (item, quantity = 1) {
-      const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/shopping`
+    async addToCart (item, quantity = 1) {
+      try {
+        const user = this.$supabase.auth.user()
 
-      const cart = {
-        product: item.id,
-        quantity
-      }
+        if (!user) {
+          // 未登入：使用 localStorage
+          const localCart = localStorage.getItem('cart')
+          const cart = localCart ? JSON.parse(localCart) : []
 
-      this.$http.post(url, cart).then((response) => {
+          const existingIndex = cart.findIndex(cartItem => cartItem.product.id === item.id)
+
+          if (existingIndex !== -1) {
+            // 更新數量
+            cart[existingIndex].quantity += quantity
+          } else {
+            // 新增項目
+            cart.push({
+              id: Date.now().toString(), // 臨時 ID
+              product: {
+                id: item.id,
+                title: item.title,
+                price: item.price,
+                imageUrl: item.imageUrl
+              },
+              quantity
+            })
+          }
+
+          localStorage.setItem('cart', JSON.stringify(cart))
+          this.getCart()
+          this.$bus.$emit('message:push', `"${item.title}" has been added to the cart successfully!`, 'success')
+          return
+        }
+
+        // 已登入：存到 Supabase
+        const { data: existing, error: selectError } = await this.$supabase
+          .from('cart_items')
+          .select('id, quantity')
+          .eq('user_id', user.id)
+          .eq('product_id', item.id)
+          .single()
+
+        if (selectError && selectError.code !== 'PGRST116') {
+          throw selectError
+        }
+
+        if (existing) {
+          // 更新數量
+          const { error: updateError } = await this.$supabase
+            .from('cart_items')
+            .update({ quantity: existing.quantity + quantity })
+            .eq('id', existing.id)
+
+          if (updateError) throw updateError
+        } else {
+          // 新增項目
+          const { error: insertError } = await this.$supabase
+            .from('cart_items')
+            .insert({
+              user_id: user.id,
+              product_id: item.id,
+              quantity
+            })
+
+          if (insertError) throw insertError
+        }
+
         this.getCart()
-        this.$bus.$emit('message:push', `"${response.data.data.product.title}" has been added to the cart successfully!`, 'success')
-      }).catch((error) => {
-        this.$bus.$emit('message:push', `${error.response.data.errors[0]}You can proceed to checkout directly~`, 'info')
-      })
+        this.$bus.$emit('message:push', `"${item.title}" has been added to the cart successfully!`, 'success')
+      } catch (error) {
+        console.error('Error adding to cart:', error)
+        this.$bus.$emit('message:push', `Failed to add item: ${error.message}`, 'danger')
+      }
     },
-    removeCartItem (id) {
-      this.isLoading = true
-      const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/shopping/${id}`
+    async removeCartItem (id) {
+      try {
+        this.isLoading = true
 
-      this.$http.delete(url).then((response) => {
-        this.$bus.$emit('message:push', `${response.data.message}`, 'success')
+        const user = this.$supabase.auth.user()
+
+        if (!user) {
+          // 未登入：從 localStorage 刪除
+          const localCart = localStorage.getItem('cart')
+          const cart = localCart ? JSON.parse(localCart) : []
+          const newCart = cart.filter(item => item.product.id !== id)
+          localStorage.setItem('cart', JSON.stringify(newCart))
+
+          this.$bus.$emit('message:push', 'Item removed from cart', 'success')
+          this.isLoading = false
+          this.getCart()
+          return
+        }
+
+        // 已登入：從 Supabase 刪除
+        const { error } = await this.$supabase
+          .from('cart_items')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('product_id', id)
+
+        if (error) throw error
+
+        this.$bus.$emit('message:push', 'Item removed from cart', 'success')
         this.isLoading = false
         this.getCart()
-      })
+      } catch (error) {
+        console.error('Error removing cart item:', error)
+        this.isLoading = false
+      }
     }
   },
   beforeUnmount: function () {

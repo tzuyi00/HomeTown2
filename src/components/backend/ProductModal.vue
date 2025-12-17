@@ -135,70 +135,101 @@ export default {
     }
   },
   methods: {
-    updateProduct () {
-      this.isLoading = true
+    async updateProduct () {
+      try {
+        this.isLoading = true
 
-      let api = ''
-      let httpMethod = ''
-      let status = ''
+        // 驗證必填項目
+        if (!this.localProduct.title || !this.localProduct.category || !this.localProduct.description) {
+          throw new Error('必填項目沒填唷！')
+        }
 
-      if (this.isNew) {
-        // 新增商品
-        api = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/ec/product`
-        httpMethod = 'post'
-        status = '新增成功囉，好棒ヽ(＾Д＾)ﾉ '
-      } else {
-        // 編輯商品
-        api = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/ec/product/${this.localProduct.id}`
-        httpMethod = 'patch'
-        status = '更新成功囉，好棒ヽ(＾Д＾)ﾉ '
-      }
+        let status = ''
 
-      // 用 httpMethod 帶入是用post還是patch
-      this.$http[httpMethod](api, this.localProduct).then((response) => {
+        if (this.isNew) {
+          // 新增商品 - 使用 Supabase insert
+          const { error } = await this.$supabase
+            .from('products')
+            .insert({
+              title: this.localProduct.title,
+              category: this.localProduct.category,
+              description: this.localProduct.description,
+              content: this.localProduct.content || '',
+              price: parseFloat(this.localProduct.price) || 0,
+              origin_price: parseFloat(this.localProduct.origin_price) || 0,
+              imageUrl: this.localProduct.imageUrl || [],
+              enabled: this.localProduct.enabled || false,
+              unit: this.localProduct.unit || ''
+            })
+
+          if (error) throw error
+          status = '新增成功囉，好棒ヽ(＾Д＾)ﾉ '
+        } else {
+          // 編輯商品 - 使用 Supabase update
+          const { error } = await this.$supabase
+            .from('products')
+            .update({
+              title: this.localProduct.title,
+              category: this.localProduct.category,
+              description: this.localProduct.description,
+              content: this.localProduct.content || '',
+              price: parseFloat(this.localProduct.price) || 0,
+              origin_price: parseFloat(this.localProduct.origin_price) || 0,
+              imageUrl: this.localProduct.imageUrl || [],
+              enabled: this.localProduct.enabled || false,
+              unit: this.localProduct.unit || ''
+            })
+            .eq('id', this.localProduct.id)
+
+          if (error) throw error
+          status = '更新成功囉，好棒ヽ(＾Д＾)ﾉ '
+        }
+
         this.isLoading = false
         $('#productModal').modal('hide')
-
-        if (response.status === 200) {
-          this.$bus.$emit('message:push', status, 'success')
-          this.$emit('update') // 更新畫面
-        } else {
-          this.$bus.$emit('message:push',
-            `出現錯誤惹，好糗Σ( ° △ °|||)︴
-            ${response.data.message}`,
-            'info')
-        }
-      }).catch(() => {
+        this.$bus.$emit('message:push', status, 'success')
+        this.$emit('update') // 更新畫面
+      } catch (error) {
         this.isLoading = false
-        this.$bus.$emit('message:push', '必填項目沒填唷！', 'info')
-      })
+        this.$bus.$emit('message:push', error.message || '必填項目沒填唷！', 'info')
+      }
     },
-    uploadFile () {
-      // 選取 DOM 中的檔案資訊
-      const uploadedFile = this.$refs.file.files[0]
+    async uploadFile () {
+      try {
+        // 選取 DOM 中的檔案資訊
+        const uploadedFile = this.$refs.file.files[0]
 
-      // 使用 FormData 上傳檔案
-      const formData = new FormData()
-      formData.append('file', uploadedFile)
+        if (!uploadedFile) return
 
-      const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/storage`
-
-      this.localStatus.fileUploading = true
-
-      this.$http.post(url, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data' // 聲明此內容的要用formData格式
+        // 驗證檔案大小 (2MB)
+        if (uploadedFile.size > 2 * 1024 * 1024) {
+          throw new Error('上傳不可超過 2 MB')
         }
-      }).then((response) => {
+
+        this.localStatus.fileUploading = true
+
+        // 生成唯一的檔案名稱
+        const fileName = `${Date.now()}-${uploadedFile.name}`
+
+        // 上傳到 Supabase Storage
+        const { error } = await this.$supabase.storage
+          .from('product-images')
+          .upload(`products/${fileName}`, uploadedFile)
+
+        if (error) throw error
+
+        // 獲取公開 URL
+        const { data: { publicUrl } } = this.$supabase.storage
+          .from('product-images')
+          .getPublicUrl(`products/${fileName}`)
+
+        this.localProduct.imageUrl.push(publicUrl)
         this.localStatus.fileUploading = false
-        // 200上傳成功
-        if (response.status === 200) {
-          this.localProduct.imageUrl.push(response.data.data.path)
-        }
-      }).catch(() => {
-        this.$bus.$emit('message:push', '上傳不可超過 2 MB', 'info')
+      } catch (error) {
+        console.error('Upload error:', error)
+        this.$bus.$emit('message:push', error.message || '上傳不可超過 2 MB', 'info')
         this.localStatus.fileUploading = false
-      })
+      }
     }
   }
 }

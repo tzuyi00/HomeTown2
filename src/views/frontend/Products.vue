@@ -75,15 +75,35 @@ export default {
     this.getProducts()
   },
   methods: {
-    getProducts (page = 1) {
-      const api = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/products?page=${page}`
+    async getProducts (page = 1) {
+      try {
+        this.isLoading = true
+        const pageSize = 20
+        const from = (page - 1) * pageSize
+        const to = from + pageSize - 1
 
-      this.$http.get(api).then((response) => {
-        this.isLoading = false
-        this.products = response.data.data // 取得產品列表
+        // 從 Supabase 獲取已啟用的產品 (前台只顯示已啟用的)
+        const { data, error, count } = await this.$supabase
+          .from('products')
+          .select('*', { count: 'exact' })
+          .eq('enabled', true)
+          .range(from, to)
+
+        if (error) throw error
+
+        this.products = data
         this.newProducts = this.products
-        this.pagination = response.data.meta.pagination // 取得分頁資訊
-      })
+        this.pagination = {
+          total: count,
+          current_page: page,
+          per_page: pageSize,
+          last_page: Math.ceil(count / pageSize)
+        }
+        this.isLoading = false
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        this.isLoading = false
+      }
     },
     getFilter () {
       switch (this.filterType) {
