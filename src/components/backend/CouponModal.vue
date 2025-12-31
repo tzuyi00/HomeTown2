@@ -109,47 +109,69 @@ export default {
     }
   },
   methods: {
-    updateCoupon () {
-      this.isLoading = true
+    async updateCoupon () {
+      try {
+        this.isLoading = true
 
-      let api = ''
-      let httpMethod = ''
-      let status = ''
+        // 驗證必填欄位
+        if (!this.localCoupon.title || !this.localCoupon.code || !this.localCoupon.percent) {
+          this.$bus.$emit('message:push', '必填項目沒填唷！', 'info')
+          this.isLoading = false
+          return
+        }
 
-      if (this.isNew) {
-        // 新增商品
-        api = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/ec/coupon`
-        httpMethod = 'post'
-        status = '新增成功囉，好棒ヽ(＾Д＾)ﾉ '
-      } else {
-        // 編輯商品
-        api = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/ec/coupon/${this.localCoupon.id}`
-        httpMethod = 'patch'
-        status = '更新成功囉，好棒ヽ(＾Д＾)ﾉ '
-      }
+        // 組合日期時間
+        if (this.localCoupon.due_date && this.localCoupon.due_time) {
+          this.localCoupon.deadline_at = `${this.localCoupon.due_date} ${this.localCoupon.due_time}`
+        }
 
-      // 針對日期做組合重新寫入到物件中
-      // 日期格式 Y-m-d H:i:s，例如：「2020-06-16 09:31:18」
-      this.localCoupon.deadline_at = `${this.localCoupon.due_date} ${this.localCoupon.due_time}`
+        let error
+        let status = ''
 
-      // 用 httpMethod 帶入是用post還是patch
-      this.$http[httpMethod](api, this.localCoupon).then((response) => {
+        if (this.isNew) {
+          // 新增優惠券
+          const { error: insertError } = await this.$supabase
+            .from('coupons')
+            .insert({
+              title: this.localCoupon.title,
+              code: this.localCoupon.code,
+              percent: this.localCoupon.percent,
+              deadline_at: this.localCoupon.deadline_at,
+              enabled: this.localCoupon.enabled || false
+            })
+
+          error = insertError
+          status = '新增成功囉，好棒ヽ(＾Д＾)ﾉ '
+        } else {
+          // 更新優惠券
+          const { error: updateError } = await this.$supabase
+            .from('coupons')
+            .update({
+              title: this.localCoupon.title,
+              code: this.localCoupon.code,
+              percent: this.localCoupon.percent,
+              deadline_at: this.localCoupon.deadline_at,
+              enabled: this.localCoupon.enabled
+            })
+            .eq('id', this.localCoupon.id)
+
+          error = updateError
+          status = '更新成功囉，好棒ヽ(＾Д＾)ﾉ '
+        }
+
+        if (error) throw error
+
         this.isLoading = false
         $('#couponModal').modal('hide')
-
-        if (response.status === 200) {
-          this.$bus.$emit('message:push', status, 'success')
-          this.$emit('update') // 更新畫面
-        } else {
-          this.$bus.$emit('message:push',
-            `出現錯誤惹，好糗Σ( ° △ °|||)︴
-            ${response.data.message}`,
-            'info')
-        }
-      }).catch(() => {
+        this.$bus.$emit('message:push', status, 'success')
+        this.$emit('update') // 更新畫面
+      } catch (error) {
+        console.error('Error updating coupon:', error)
         this.isLoading = false
-        this.$bus.$emit('message:push', '必填項目沒填唷！', 'info')
-      })
+        this.$bus.$emit('message:push',
+          `出現錯誤惹，好糗Σ( ° △ °|||)︴ ${error.message}`,
+          'danger')
+      }
     }
   }
 }

@@ -51,9 +51,25 @@ export default {
     async delProduct () {
       try {
         this.isLoading = true
-        let tableName = ''
 
-        // 根據 delName 決定要刪除的表
+        // 特殊處理：刪除 Storage 圖片
+        if (this.delName === '圖片') {
+          const { error } = await this.$supabase
+            .storage
+            .from('product-images')
+            .remove([this.tempProduct.name])
+
+          if (error) throw error
+
+          this.isLoading = false
+          this.$bus.$emit('message:push', '圖片刪除成功囉，好棒ヽ(＾Д＾)ﾉ ', 'success')
+          $('#delModal').modal('hide')
+          this.$emit('update')
+          return
+        }
+
+        // 其他項目：從資料表刪除
+        let tableName = ''
         switch (this.delName) {
           case '商品': {
             tableName = 'products'
@@ -61,11 +77,6 @@ export default {
           }
           case '優惠券': {
             tableName = 'coupons'
-            break
-          }
-          case '圖片': {
-            // 圖片刪除邏輯 - 從 storage 刪除
-            tableName = 'storage'
             break
           }
           default:

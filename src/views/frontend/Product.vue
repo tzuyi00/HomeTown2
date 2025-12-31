@@ -103,7 +103,7 @@ export default {
       selectedProducts: [],
       img: {
         banner:
-          'https://hexschool-api.s3.us-west-2.amazonaws.com/custom/HYMjBNd1w2pIbmbPkhzBETIPArFvCdK1hbyk8ug7kQOcTNQQ6Htwffj3G7alDUPIW7ZnJloorvHNYWIBrv1y27DwbZtUCbaQ7ozv3QeG8TEU2HRpbbxx6ZS68xNiU5VO.jpg'
+          'https://kslpccltrlcujjongied.supabase.co/storage/v1/object/public/site-assets/1767018202981.jpg'
       }
     }
   },

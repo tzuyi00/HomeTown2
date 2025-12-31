@@ -28,8 +28,8 @@
               <th scope="row">{{index + 1}}</th>
               <td>{{ item.title }}</td>
               <td>{{ item.code }}</td>
-              <td>{{ item.percent }}</td>
-              <td>{{ item.deadline.datetime }}</td>
+              <td>{{ item.percent }}%</td>
+              <td>{{ item.deadline_at || '無期限' }}</td>
               <td>
                 <span v-if="item.enabled" class="text-success">啟用</span>
                 <span v-else class="text-danger">未啟用</span>
@@ -105,16 +105,38 @@ export default {
     this.getCoupons()
   },
   methods: {
-    getCoupons (page = 1) {
-      const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/ec/coupons?page=${page}&paged=10`
+    async getCoupons (page = 1) {
+      try {
+        this.isLoading = true
 
-      this.$http.get(url).then((response) => {
+        // 從 Supabase 讀取優惠券資料
+        const { data, error, count } = await this.$supabase
+          .from('coupons')
+          .select('*', { count: 'exact' })
+          .order('created_at', { ascending: false })
+          .range((page - 1) * 10, page * 10 - 1)
+
+        if (error) throw error
+
+        this.coupons = data
+
+        // 計算分頁資訊
+        const totalPages = Math.ceil(count / 10)
+        this.pagination = {
+          current_page: page,
+          total_pages: totalPages,
+          has_pre: page > 1,
+          has_next: page < totalPages
+        }
+
         this.isLoading = false
-        this.coupons = response.data.data
-        this.pagination = response.data.meta.pagination
-      })
+      } catch (error) {
+        console.error('Error fetching coupons:', error)
+        this.$bus.$emit('message:push', '讀取優惠券失敗', 'danger')
+        this.isLoading = false
+      }
     },
-    openModal (modalStatus, item) {
+    async openModal (modalStatus, item) {
       switch (modalStatus) {
         case 'new': {
           this.tempCoupon = {}
@@ -123,24 +145,35 @@ export default {
           break
         }
         case 'edit': {
-          this.loadingBtn = item.id // 當loadingBtn = item.id時顯示loading畫面
+          try {
+            this.loadingBtn = item.id
 
-          const api = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/ec/coupon/${item.id}`
+            // 從 Supabase 讀取單一優惠券資料
+            const { data, error } = await this.$supabase
+              .from('coupons')
+              .select('*')
+              .eq('id', item.id)
+              .single()
 
-          this.$http.get(api).then((res) => {
-            this.tempCoupon = res.data.data // 取得成功後回寫到 tempCoupon
+            if (error) throw error
 
-            // 使用 split 切割相關時間戳
-            const dedlineAt = this.tempCoupon.deadline.datetime.split(' ');
-            [this.tempCoupon.due_date, this.tempCoupon.due_time] = dedlineAt // 日期
-          }).then((res) => {
+            this.tempCoupon = data
+
+            // 如果有 deadline_at，分割為日期和時間
+            if (this.tempCoupon.deadline_at) {
+              const dedlineAt = this.tempCoupon.deadline_at.split(' ')
+              this.tempCoupon.due_date = dedlineAt[0]
+              this.tempCoupon.due_time = dedlineAt[1]
+            }
+
             $('#couponModal').modal('show')
-            this.loadingBtn = '' // 清除loading畫面
-          }).catch((error) => {
-            this.$bus.$emit('message:push', `${error.response.data.message}`, 'info')
-          })
-
-          this.isNew = false
+            this.loadingBtn = ''
+            this.isNew = false
+          } catch (error) {
+            console.error('Error fetching coupon:', error)
+            this.$bus.$emit('message:push', '讀取優惠券失敗', 'danger')
+            this.loadingBtn = ''
+          }
           break
         }
         case 'delete': {

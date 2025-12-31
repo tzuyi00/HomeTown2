@@ -51,39 +51,53 @@ export default {
   },
   props: {},
   methods: {
-    uploadFile () {
-      // 選取 DOM 中的檔案資訊
-      const uploadedFile = this.$refs.file.files[0]
+    async uploadFile () {
+      try {
+        // 選取 DOM 中的檔案資訊
+        const uploadedFile = this.$refs.file.files[0]
 
-      // 使用 FormData 上傳檔案
-      const formData = new FormData()
-      formData.append('file', uploadedFile)
-
-      const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/storage`
-
-      this.fileUploading = true
-
-      this.$http.post(url, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data' // 聲明此內容的要用formData格式
+        if (!uploadedFile) {
+          this.$bus.$emit('message:push', '請選擇檔案', 'info')
+          return
         }
-      }).then((response) => {
-        this.fileUploading = false
-        // 200上傳成功
-        if (response.status === 200) {
-          this.$emit('update') // 更新畫面
-          $('#storageModal').modal('hide')
-          this.$bus.$emit('message:push', '圖片新增成功囉，好棒ヽ(＾Д＾)ﾉ ', 'success')
-        } else {
-          this.$bus.$emit('message:push',
-            `出現錯誤惹，好糗Σ( ° △ °|||)︴
-            ${response.data.message}`,
-            'info')
+
+        // 檢查檔案大小（限制 2MB）
+        if (uploadedFile.size > 2 * 1024 * 1024) {
+          this.$bus.$emit('message:push', '上傳不可超過 2 MB', 'info')
+          return
         }
-      }).catch(() => {
+
+        this.fileUploading = true
+
+        // 生成唯一的檔案名稱（使用時間戳）
+        const fileExt = uploadedFile.name.split('.').pop()
+        const fileName = `${Date.now()}.${fileExt}`
+
+        // 上傳到 Supabase Storage
+        const { error } = await this.$supabase
+          .storage
+          .from('site-assets')
+          .upload(fileName, uploadedFile, {
+            cacheControl: '3600',
+            upsert: false
+          })
+
+        if (error) throw error
+
         this.fileUploading = false
-        this.$bus.$emit('message:push', '上傳不可超過 2 MB', 'info')
-      })
+        this.$emit('update') // 更新畫面
+        $('#storageModal').modal('hide')
+        this.$bus.$emit('message:push', '圖片新增成功囉，好棒ヽ(＾Д＾)ﾉ ', 'success')
+
+        // 清空檔案選擇
+        this.$refs.file.value = ''
+      } catch (error) {
+        console.error('Upload error:', error)
+        this.fileUploading = false
+        this.$bus.$emit('message:push',
+          `出現錯誤惹，好糗Σ( ° △ °|||)︴ ${error.message}`,
+          'info')
+      }
     }
   }
 }

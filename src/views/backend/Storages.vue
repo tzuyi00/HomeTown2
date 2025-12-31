@@ -82,14 +82,62 @@ export default {
     this.getStorages()
   },
   methods: {
-    getStorages (page = 1) {
-      const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/storage?page=${page}&paged=20`
+    async getStorages (page = 1) {
+      try {
+        this.isLoading = true
 
-      this.$http.get(url).then((response) => {
+        // 從 Supabase Storage 列出所有檔案
+        const { data: files, error } = await this.$supabase
+          .storage
+          .from('site-assets')
+          .list('', {
+            limit: 100,
+            offset: 0,
+            sortBy: { column: 'created_at', order: 'desc' }
+          })
+
+        if (error) throw error
+
+        // 過濾掉系統檔案（.emptyFolderPlaceholder）
+        const validFiles = files.filter(file =>
+          file.name &&
+          !file.name.startsWith('.') &&
+          file.id
+        )
+
+        console.log('Valid files:', validFiles) // 除錯用
+
+        // 轉換為前端需要的格式
+        this.storages = validFiles.map(file => {
+          const publicUrl = this.$supabase
+            .storage
+            .from('site-assets')
+            .getPublicUrl(file.name)
+
+          return {
+            id: file.id,
+            name: file.name,
+            path: publicUrl.publicURL,
+            created_at: file.created_at
+          }
+        })
+
+        console.log('Transformed storages:', this.storages) // 除錯用
+
+        // 暫時使用簡單的分頁（Supabase Storage 沒有內建的分頁資訊）
+        this.pagination = {
+          current_page: page,
+          total_pages: Math.ceil(validFiles.length / 20) || 1,
+          has_pre: page > 1,
+          has_next: validFiles.length >= 20
+        }
+
         this.isLoading = false
-        this.storages = response.data.data
-        this.pagination = response.data.meta.pagination
-      })
+      } catch (error) {
+        console.error('Error fetching storage:', error)
+        this.$bus.$emit('message:push', `無法載入圖片列表: ${error.message}`, 'danger')
+        this.isLoading = false
+      }
     },
     openModal (modalStatus, item) {
       switch (modalStatus) {

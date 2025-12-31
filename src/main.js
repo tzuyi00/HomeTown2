@@ -20,12 +20,14 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 import App from './App.vue'
 import router from './router'
 import currencyFilter from './filters/currency' // filter 千分位
+import timestampFilter from './filters/timestamp' // filter 時間格式化
 import { supabase } from './utils/supabase' // Supabase 客戶端
 
 window.$ = jquery
 Vue.config.productionTip = false
 
 Vue.filter('currency', currencyFilter)
+Vue.filter('timestamp', timestampFilter)
 
 // 套件加入到Vue的藍圖內(加入到原型內)，為方法，需用呼叫方式取用
 Vue.use(VueAxios, axios)
