@@ -20,23 +20,22 @@
           <tbody>
             <tr v-for="(item, index) in orders" :key="item.id">
               <th scope="row">{{index + 1}}</th>
-              <td>{{ item.created.datetime }}</td>
+              <td>{{ item.created_at | timestamp }}</td>
               <td>
                 <ul class="list-unstyled">
                   <li
-                    v-for="(product, i) in item.products"
+                    v-for="(orderItem, i) in item.order_items"
                     :key="i"
                   >
-                    {{ product.product.title }} 數量：{{ product.quantity }}
-                    {{ product.product.unit }}
+                    {{ orderItem.products.title }} 數量：{{ orderItem.quantity }}
                   </li>
                 </ul>
               </td>
               <td>
-                {{ item.payment }}
+                {{ item.payment_method }}
               </td>
               <td class="text-right">
-                {{ item.amount }}
+                {{ item.total | currency }}
               </td>
               <td>
                 <div class="custom-control custom-switch">
@@ -93,30 +92,67 @@ export default {
     this.getOrders()
   },
   methods: {
-    getOrders (page = 1) {
-      const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/ec/orders?page=${page}&paged=10`
+    async getOrders (page = 1) {
+      try {
+        this.isLoading = true
 
-      this.$http.get(url).then((response) => {
+        // 從 Supabase 讀取訂單資料
+        const { data, error, count } = await this.$supabase
+          .from('orders')
+          .select(`
+            *,
+            order_items (
+              quantity,
+              price,
+              products:product_id (title)
+            )
+          `, { count: 'exact' })
+          .order('created_at', { ascending: false })
+          .range((page - 1) * 10, page * 10 - 1)
+
+        if (error) throw error
+
+        // 直接使用資料，不需要額外轉換
+        this.orders = data
+
+        // 計算分頁資訊
+        const totalPages = Math.ceil(count / 10)
+        this.pagination = {
+          current_page: page,
+          total_pages: totalPages,
+          has_pre: page > 1,
+          has_next: page < totalPages
+        }
+
         this.isLoading = false
-        this.orders = response.data.data
-        this.pagination = response.data.meta.pagination
-      })
-    },
-    setOrderPaid (item) {
-      this.isLoading = true
-      let url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/ec/orders/${item.id}/paid`
-      let status = '已修改為 "已付款" ヽ(＾Д＾)ﾉ '
-
-      if (!item.paid) {
-        url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/ec/orders/${item.id}/unpaid`
-        status = '已修改為 "尚未付款" ヽ(＾Д＾)ﾉ '
+      } catch (error) {
+        console.error('Error fetching orders:', error)
+        this.$bus.$emit('message:push', '讀取訂單失敗', 'danger')
+        this.isLoading = false
       }
+    },
+    async setOrderPaid (item) {
+      try {
+        this.isLoading = true
 
-      this.$http.patch(url, item.id).then(() => {
+        // 更新訂單的付款狀態
+        const { error } = await this.$supabase
+          .from('orders')
+          .update({ paid: !item.paid })
+          .eq('id', item.id)
+
+        if (error) throw error
+
+        const status = !item.paid ? '已修改為 "已付款" ヽ(＾Д＾)ﾉ ' : '已修改為 "尚未付款" ヽ(＾Д＾)ﾉ '
+
         this.isLoading = false
         this.$bus.$emit('message:push', status, 'success')
         this.getOrders()
-      })
+      } catch (error) {
+        console.error('Error updating order paid status:', error)
+        this.$bus.$emit('message:push', '更新付款狀態失敗', 'danger')
+        this.isLoading = false
+      }
     }
   }
 }

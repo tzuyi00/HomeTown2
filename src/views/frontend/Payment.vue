@@ -129,7 +129,7 @@ export default {
       orderId: '',
       img: {
         banner:
-          'https://hexschool-api.s3.us-west-2.amazonaws.com/custom/HYMjBNd1w2pIbmbPkhzBETIPArFvCdK1hbyk8ug7kQOcTNQQ6Htwffj3G7alDUPIW7ZnJloorvHNYWIBrv1y27DwbZtUCbaQ7ozv3QeG8TEU2HRpbbxx6ZS68xNiU5VO.jpg'
+          'https://kslpccltrlcujjongied.supabase.co/storage/v1/object/public/site-assets/1767018202981.jpg'
       }
     }
   },
@@ -143,33 +143,103 @@ export default {
     }
   },
   methods: {
-    getDetailed (id) {
-      this.isLoading = true
+    async getDetailed (id) {
+      try {
+        this.isLoading = true
 
-      const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/orders/${id}`
+        // 從 Supabase 讀取訂單資料
+        const { data: orderData, error: orderError } = await this.$supabase
+          .from('orders')
+          .select(`
+            id,
+            name,
+            email,
+            tel,
+            address,
+            message,
+            total,
+            payment_method,
+            paid,
+            coupon_id,
+            coupons:coupon_id (id, code, percent, title)
+          `)
+          .eq('id', id)
+          .single()
 
-      this.$http.get(url).then((response) => {
-        this.order = response.data.data
+        if (orderError) throw orderError
+
+        // 讀取訂單明細
+        const { data: itemsData, error: itemsError } = await this.$supabase
+          .from('order_items')
+          .select(`
+            id,
+            quantity,
+            price,
+            products:product_id (id, title, imageUrl)
+          `)
+          .eq('order_id', id)
+
+        if (itemsError) throw itemsError
+
+        // 轉換為前端需要的格式
+        this.order = {
+          id: orderData.id,
+          user: {
+            name: orderData.name,
+            email: orderData.email,
+            tel: orderData.tel,
+            address: orderData.address
+          },
+          message: orderData.message,
+          amount: orderData.total,
+          payment: orderData.payment_method,
+          paid: orderData.paid,
+          coupon: orderData.coupons,
+          products: itemsData.map(item => ({
+            id: item.id,
+            quantity: item.quantity,
+            product: {
+              id: item.products.id,
+              title: item.products.title,
+              price: item.price,
+              imageUrl: item.products.imageUrl || []
+            }
+          }))
+        }
+
         this.isLoading = false
-      })
+      } catch (error) {
+        console.error('Error fetching order:', error)
+        this.$bus.$emit('message:push', 'Failed to load order details', 'danger')
+        this.isLoading = false
+      }
     },
     // 使用者對某筆訂單付款結帳
-    payOrder () {
-      this.isLoading = true
-      const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/orders/${this.orderId}/paying`
+    async payOrder () {
+      try {
+        this.isLoading = true
 
-      this.$http.post(url).then((response) => {
+        // 更新訂單的 paid 狀態為 true
+        const { error } = await this.$supabase
+          .from('orders')
+          .update({ paid: true })
+          .eq('id', this.orderId)
+
+        if (error) throw error
+
         $('#paymentModal').modal('show')
         setTimeout(() => {
           $('#paymentModal').modal('hide')
         }, 5000)
 
-        // 如果成功true，重跑頁面
-        if (response.data.data.paid) {
-          this.getDetailed(this.orderId)
-        }
+        // 重新載入訂單資料
+        await this.getDetailed(this.orderId)
         this.isLoading = false
-      })
+      } catch (error) {
+        console.error('Error processing payment:', error)
+        this.$bus.$emit('message:push', 'Payment processing failed', 'danger')
+        this.isLoading = false
+      }
     }
   }
 }

@@ -44,30 +44,35 @@ export default {
       user: {
         email: '',
         password: ''
-      }
+      },
+      isLoading: false
     }
   },
   methods: {
-    // 登入
-    signin () {
-      const api = `${process.env.VUE_APP_APIPATH}auth/login`
+    // 使用 Supabase 登入 (v1 API)
+    async signin () {
+      try {
+        this.isLoading = true
+        // Supabase v1 使用 signIn() 而不是 signInWithPassword()
+        const { user, error } = await this.$supabase.auth.signIn({
+          email: this.user.email,
+          password: this.user.password
+        })
 
-      //   post將輸入的user資料送出
-      this.$http.post(api, this.user).then((response) => {
-        const { token } = response.data
-        const { expired } = response.data
+        if (error) throw error
 
-        // 將資料存入cookie
-        document.cookie = `lizToken=${token}; expires=${new Date(expired * 1000)};`
-
+        // 登入成功，Supabase 會自動管理 session 和 token
+        console.log('Logged in user:', user)
         this.$bus.$emit('message:push', 'Login successful ヾ(●゜▽゜●)♡', 'success')
-
-        this.$router.push('admin/products')
-      }).catch(() => {
+        this.$router.push('/admin/products')
+      } catch (error) {
+        console.error('Login error:', error)
         this.$bus.$emit('message:push',
-          'Login failed, please try again Σ( ° △ °|||)︴ ',
+          `Login failed: ${error.message || 'Please try again'} Σ( ° △ °|||)︴ `,
           'info')
-      })
+      } finally {
+        this.isLoading = false
+      }
     }
   }
 }

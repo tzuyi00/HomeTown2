@@ -103,61 +103,94 @@ export default {
       selectedProducts: [],
       img: {
         banner:
-          'https://hexschool-api.s3.us-west-2.amazonaws.com/custom/HYMjBNd1w2pIbmbPkhzBETIPArFvCdK1hbyk8ug7kQOcTNQQ6Htwffj3G7alDUPIW7ZnJloorvHNYWIBrv1y27DwbZtUCbaQ7ozv3QeG8TEU2HRpbbxx6ZS68xNiU5VO.jpg'
+          'https://kslpccltrlcujjongied.supabase.co/storage/v1/object/public/site-assets/1767018202981.jpg'
       }
     }
   },
   created () {
     this.isLoading = true
-
-    const api = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/products?page=1`
-
-    this.$http.get(api).then((response) => {
-      this.isLoading = false
-      this.products = response.data.data // 取得產品列表
-    })
-
+    this.getAllProducts()
     this.getProduct()
     this.getRelatedProducts()
   },
   methods: {
-    getProduct () {
-      const id = this.$route.params.id
-      // const { id } = this.$route.params // Airbnb es6寫法
-      const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/product/${id}`
-      this.$http
-        .get(url).then((response) => {
-          this.isLoading = false
-          this.product = response.data.data
-        })
+    async getAllProducts () {
+      try {
+        const { data, error } = await this.$supabase
+          .from('products')
+          .select('*')
+          .eq('enabled', true)
+
+        if (error) throw error
+
+        this.products = data.map(item => ({
+          ...item,
+          imageUrl: item.imageUrl || item.image_urls || []
+        }))
+      } catch (error) {
+        console.error('Error fetching all products:', error)
+      }
     },
-    getRelatedProducts () {
-      this.relatedProducts = []
-      this.selectedProducts = []
-      const id = this.$route.params.id
-      const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/product/${id}`
-      this.isLoading = true
-      this.$http.get(url).then(response => {
+    async getProduct () {
+      try {
+        const id = this.$route.params.id
+        const { data, error } = await this.$supabase
+          .from('products')
+          .select('*')
+          .eq('id', id)
+          .single()
+
+        if (error) throw error
+
+        this.product = {
+          ...data,
+          imageUrl: data.imageUrl || data.image_urls || []
+        }
+        this.isLoading = false
+      } catch (error) {
+        console.error('Error fetching product:', error)
+        this.isLoading = false
+      }
+    },
+    async getRelatedProducts () {
+      try {
+        this.relatedProducts = []
+        this.selectedProducts = []
+        const id = this.$route.params.id
+        this.isLoading = true
+
+        // 先獲取當前產品資訊
+        const { data: currentProduct, error: productError } = await this.$supabase
+          .from('products')
+          .select('category')
+          .eq('id', id)
+          .single()
+
+        if (productError) throw productError
+
+        // 篩選相同分類的產品（排除當前產品）
         this.products.forEach(product => {
-          // products內產品的種類=此產品種類 && 排除此產品
-          if (product.category === response.data.data.category && product.id !== id) {
+          if (product.category === currentProduct.category && product.id !== id) {
             this.relatedProducts.push(product)
           }
         })
+
+        // 隨機選取最多 4 個相關產品
         if (this.relatedProducts.length > 4) {
-          for (let i = 0; i < 4; i++) { // 選四個相關產品
-            let num = Math.random() * this.relatedProducts.length // 取得區間內亂數
-            num = Math.floor(num) // 小於等於所給數字的最大整數
-            this.selectedProducts.push(this.relatedProducts[num]) // 將 relatedProduct 的第 num 個放入 selectedProducts
-            this.relatedProducts.splice(num, 1) // 須同時除掉 relatedProduct 的第 num 個，以免重複
+          for (let i = 0; i < 4; i++) {
+            let num = Math.random() * this.relatedProducts.length
+            num = Math.floor(num)
+            this.selectedProducts.push(this.relatedProducts[num])
+            this.relatedProducts.splice(num, 1)
           }
         } else {
           this.selectedProducts = this.relatedProducts
         }
         this.isLoading = false
-      }).catch(() => {
+      } catch (error) {
+        console.error('Error fetching related products:', error)
         this.isLoading = false
-      })
+      }
     },
     // 點擊 + - 按鈕做數量判斷
     changeQty (num) {

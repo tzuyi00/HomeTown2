@@ -112,7 +112,7 @@ export default {
       },
       img: {
         office:
-          'https://hexschool-api.s3.us-west-2.amazonaws.com/custom/ToGrp5oKeNiOvFn60NseexL3mdxLc6HTYC77Oqu6dAr4QXzwdOKXvDzW7biyZkTHAc4WT4ea0mI8ESiUPJbOfCm7HwQpc42bOhdKVw5ugihTgwef0jMH896ixy1S9l4U.jpg'
+          'https://kslpccltrlcujjongied.supabase.co/storage/v1/object/public/site-assets/1767017987263.jpg'
       }
     }
   },

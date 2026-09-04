@@ -48,34 +48,58 @@ export default {
     delName: String
   },
   methods: {
-    delProduct () {
-      this.isLoading = true
-      let url = ''
-      switch (this.delName) {
-        case '商品': {
-          url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/ec/product/${this.tempProduct.id}`
-          break
-        }
-        case '優惠券': {
-          url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/ec/coupon/${this.tempProduct.id}`
-          break
-        }
-        case '圖片': {
-          url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/admin/storage/${this.tempProduct.id}`
-          break
-        }
-        default:
-          break
-      }
+    async delProduct () {
+      try {
+        this.isLoading = true
 
-      this.$http.delete(url).then(() => {
+        // 特殊處理：刪除 Storage 圖片
+        if (this.delName === '圖片') {
+          const { error } = await this.$supabase
+            .storage
+            .from('product-images')
+            .remove([this.tempProduct.name])
+
+          if (error) throw error
+
+          this.isLoading = false
+          this.$bus.$emit('message:push', '圖片刪除成功囉，好棒ヽ(＾Д＾)ﾉ ', 'success')
+          $('#delModal').modal('hide')
+          this.$emit('update')
+          return
+        }
+
+        // 其他項目：從資料表刪除
+        let tableName = ''
+        switch (this.delName) {
+          case '商品': {
+            tableName = 'products'
+            break
+          }
+          case '優惠券': {
+            tableName = 'coupons'
+            break
+          }
+          default:
+            throw new Error('Unknown item type')
+        }
+
+        // 執行 Supabase 刪除
+        const { error } = await this.$supabase
+          .from(tableName)
+          .delete()
+          .eq('id', this.tempProduct.id)
+
+        if (error) throw error
+
         this.isLoading = false
         this.$bus.$emit('message:push', `${this.delName}刪除成功囉，好棒ヽ(＾Д＾)ﾉ `, 'success')
         $('#delModal').modal('hide') // 刪除成功後關閉 Modal
         this.$emit('update') // 重新取得全部資料(更新畫面)
-      }).catch(() => {
+      } catch (error) {
+        console.error('Delete error:', error)
         this.isLoading = false
-      })
+        this.$bus.$emit('message:push', `刪除失敗: ${error.message}`, 'info')
+      }
     }
   }
 }

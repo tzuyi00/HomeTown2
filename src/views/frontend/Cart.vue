@@ -291,7 +291,7 @@ export default {
       },
       img: {
         banner:
-          'https://hexschool-api.s3.us-west-2.amazonaws.com/custom/HYMjBNd1w2pIbmbPkhzBETIPArFvCdK1hbyk8ug7kQOcTNQQ6Htwffj3G7alDUPIW7ZnJloorvHNYWIBrv1y27DwbZtUCbaQ7ozv3QeG8TEU2HRpbbxx6ZS68xNiU5VO.jpg'
+          'https://kslpccltrlcujjongied.supabase.co/storage/v1/object/public/site-assets/1767018202981.jpg'
       }
     }
   },
@@ -308,16 +308,51 @@ export default {
       $('.orderPage').hide()
       $('.cartPage').fadeIn(800)
     },
-    getCart () {
-      this.isLoading = true
-      const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/shopping`
+    async getCart () {
+      try {
+        this.isLoading = true
+        const user = this.$supabase.auth.user()
 
-      this.$http.get(url).then((response) => {
-        this.cart = response.data.data
-        // 購物車金額拉出來重新計算，不然刪除時會出錯造成累加
+        if (!user) {
+          // 未登入：從 localStorage 讀取
+          const localCart = localStorage.getItem('cart')
+          this.cart = localCart ? JSON.parse(localCart) : []
+          this.updateTotal()
+          this.isLoading = false
+          return
+        }
+
+        const { data, error } = await this.$supabase
+          .from('cart_items')
+          .select(`
+            id,
+            product_id,
+            quantity,
+            products:product_id (id, title, price, imageUrl)
+          `)
+          .eq('user_id', user.id)
+
+        if (error) throw error
+
+        // 轉換格式以相容原本的前端代碼
+        this.cart = data.map(item => ({
+          id: item.id,
+          product: {
+            id: item.products.id,
+            title: item.products.title,
+            price: item.products.price,
+            imageUrl: item.products.imageUrl
+          },
+          quantity: item.quantity
+        }))
+
         this.updateTotal()
         this.isLoading = false
-      })
+      } catch (error) {
+        console.error('Error fetching cart:', error)
+        this.cart = []
+        this.isLoading = false
+      }
     },
     /**
      * 總金額計算
@@ -331,104 +366,194 @@ export default {
     /**
      * 編輯商品數量
     */
-    quantityUpdata (id, num) {
-      if (num > 10) {
-        this.$bus.$emit('message:push', 'Maximum quantity is 10!', 'info')
-        // 修正數量為 10
-        num = 10
-        const item = Array.isArray(this.cart) ? this.cart.find(item => item.product.id === id) : null
-        if (item) {
-          item.quantity = 10
+    async quantityUpdata (id, num) {
+      try {
+        if (num > 10) {
+          this.$bus.$emit('message:push', 'Maximum quantity is 10!', 'info')
+          num = 10
+          const item = Array.isArray(this.cart) ? this.cart.find(item => item.product.id === id) : null
+          if (item) {
+            item.quantity = 10
+          }
         }
-      }
-      if (num < 1) {
-        this.$bus.$emit('message:push', 'Minimum quantity is 1!', 'info')
-        // 修正數量為 1
-        num = 1
-        const item = Array.isArray(this.cart) ? this.cart.find(item => item.product.id === id) : null
-        if (item) {
-          item.quantity = 1
+        if (num < 1) {
+          this.$bus.$emit('message:push', 'Minimum quantity is 1!', 'info')
+          num = 1
+          const item = Array.isArray(this.cart) ? this.cart.find(item => item.product.id === id) : null
+          if (item) {
+            item.quantity = 1
+          }
         }
-      }
-      this.isLoading = true
-      const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/shopping`
 
-      const data = {
-        product: id,
-        quantity: num
-      }
+        this.isLoading = true
+        const user = this.$supabase.auth.user()
 
-      this.$http.patch(url, data).then(() => {
+        if (!user) {
+          // 未登入：更新 localStorage
+          const localCart = localStorage.getItem('cart')
+          const cart = localCart ? JSON.parse(localCart) : []
+          const item = cart.find(item => item.product.id === id)
+          if (item) {
+            item.quantity = parseInt(num)
+            localStorage.setItem('cart', JSON.stringify(cart))
+          }
+          this.isLoading = false
+          this.$bus.$emit('nav-getCart')
+          this.getCart()
+          return
+        }
+
+        // 已登入：更新 Supabase
+        const { error } = await this.$supabase
+          .from('cart_items')
+          .update({ quantity: parseInt(num) })
+          .eq('user_id', user.id)
+          .eq('product_id', id)
+
+        if (error) throw error
+
         this.isLoading = false
         this.$bus.$emit('nav-getCart')
         this.getCart()
-      }).catch((error) => {
+      } catch (error) {
+        console.error('Error updating quantity:', error)
         this.isLoading = false
-        console.error(error)
-      })
+      }
     },
     /**
      * 刪除某一筆購物車資料
     */
-    removeCartItem (id) {
-      this.isLoading = true
-      const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/shopping/${id}`
+    async removeCartItem (id) {
+      try {
+        this.isLoading = true
+        const user = this.$supabase.auth.user()
 
-      this.$http.delete(url).then((response) => {
+        if (!user) {
+          // 未登入：從 localStorage 刪除
+          const localCart = localStorage.getItem('cart')
+          const cart = localCart ? JSON.parse(localCart) : []
+          const newCart = cart.filter(item => item.product.id !== id)
+          localStorage.setItem('cart', JSON.stringify(newCart))
+
+          this.$bus.$emit('nav-getCart')
+          this.isLoading = false
+          this.getCart()
+          return
+        }
+
+        // 已登入：從 Supabase 刪除
+        const { error } = await this.$supabase
+          .from('cart_items')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('product_id', id)
+
+        if (error) throw error
+
         this.$bus.$emit('nav-getCart')
         this.isLoading = false
         this.getCart()
-      })
+      } catch (error) {
+        console.error('Error removing cart item:', error)
+        this.isLoading = false
+      }
     },
     /**
      * 搜尋此序號是否有coupon
     */
-    addCoupon () {
-      this.isLoading = true
-      const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/coupon/search`
+    async addCoupon () {
+      try {
+        this.isLoading = true
 
-      const data = {
-        code: this.coupon_code
+        const { data, error } = await this.$supabase
+          .from('coupons')
+          .select('*')
+          .eq('code', this.coupon_code)
+          .eq('enabled', true)
+          .single()
+
+        if (error) throw error
+
+        this.coupon = data
+        this.isLoading = false
+      } catch (error) {
+        console.error('Error fetching coupon:', error)
+        this.isLoading = false
+        this.$bus.$emit('message:push', 'Coupon not found or expired', 'info')
       }
-
-      this.$http.post(url, data).then((response) => {
-        this.coupon = response.data.data // 若 coupon 存在就回寫到 this.coupon
-        this.isLoading = false
-      }).catch((error) => {
-        this.isLoading = false
-        this.$bus.$emit('message:push', `${error.response.data.message}`, 'info')
-      })
     },
-    createOrder () {
-      this.isLoading = true
+    async createOrder () {
+      try {
+        this.isLoading = true
+        const user = this.$supabase.auth.user()
 
-      const url = `${process.env.VUE_APP_APIPATH}${process.env.VUE_APP_UUID}/ec/orders`
-
-      const order = { ...this.form }
-
-      // coupon.enabled = ture 表示已執行過 addCoupon()，再將 coupon.code 放進 order
-      if (this.coupon.enabled) {
-        order.coupon = this.coupon.code
-      }
-
-      this.$http.post(url, order).then((response) => {
-        if (response.data.data.id) {
-          this.$router.push(`/payment/${response.data.data.id}`)
+        if (!user) {
+          // 結帳時需要登入
+          this.$bus.$emit('message:push', 'Please login to complete your order', 'info')
+          this.$router.push('/login')
+          this.isLoading = false
+          return
         }
+
+        // 計算訂單總額
+        let total = this.cartTotal
+        let couponId = null
+
+        if (this.coupon.enabled) {
+          couponId = this.coupon.id
+          total = this.cartTotal * (this.coupon.percent / 100)
+        }
+
+        // 建立訂單
+        const { data: order, error: orderError } = await this.$supabase
+          .from('orders')
+          .insert({
+            user_id: user.id,
+            name: this.form.name,
+            email: this.form.email,
+            tel: this.form.tel,
+            address: this.form.address,
+            message: this.form.message,
+            total,
+            payment_method: this.form.payment,
+            coupon_id: couponId,
+            status: 'pending'
+          })
+          .select()
+          .single()
+
+        if (orderError) throw orderError
+
+        // 新增訂單明細
+        const orderItems = this.cart.map(item => ({
+          order_id: order.id,
+          product_id: item.product.id,
+          quantity: item.quantity,
+          price: item.product.price
+        }))
+
+        const { error: itemsError } = await this.$supabase
+          .from('order_items')
+          .insert(orderItems)
+
+        if (itemsError) throw itemsError
+
+        // 清空購物車
+        const { error: deleteError } = await this.$supabase
+          .from('cart_items')
+          .delete()
+          .eq('user_id', user.id)
+
+        if (deleteError) throw deleteError
+
+        this.$router.push(`/payment/${order.id}`)
         this.$bus.$emit('nav-getCart')
         this.isLoading = false
-      }).catch((error) => {
-        const errorData = error.response.data.errors
-
-        errorData.forEach((err) => {
-          this.$bus.$emit('message:push',
-            `Failed to create order. Please try again
-          ${err}`,
-            'info')
-        })
-
+      } catch (error) {
+        console.error('Error creating order:', error)
+        this.$bus.$emit('message:push', `Failed to create order: ${error.message}`, 'info')
         this.isLoading = false
-      })
+      }
     }
   }
 }

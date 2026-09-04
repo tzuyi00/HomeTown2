@@ -49,34 +49,32 @@ export default {
     hidenavpanel () {
       $('#rebody').toggleClass('hide-navpanel')
     },
-    // 確認 Token 狀態
-    checkLogin () {
-      this.token = document.cookie.replace(
-        /(?:(?:^|.*;\s*)lizToken\s*=\s*([^;]*).*$)|^.*$/,
-        '$1'
-      )
-      this.$http.defaults.headers.common.Authorization = `Bearer ${this.token}` // Token 夾帶入 Headers 內，放於此(外層)就好
+    // 確認 Supabase Auth 狀態
+    async checkLogin () {
+      try {
+        const user = this.$supabase.auth.user()
 
-      const api = `${process.env.VUE_APP_APIPATH}auth/check`
+        if (!user) {
+          throw new Error('Not authenticated')
+        }
 
-      this.$http
-        .post(api, {
-          api_token: this.token
-        })
-        .then((res) => {
-          this.isLoading = false
-          // 登入沒有問題
-          this.checkSuccess = true
-        })
-        .catch(() => {
-          this.isLoading = false
-          // 驗證失敗，返回登入頁，內層不需再重複驗證
-          this.$router.push('/login')
-        })
+        this.token = user.id
+        this.isLoading = false
+        this.checkSuccess = true
+      } catch (error) {
+        console.error('Auth check error:', error)
+        this.isLoading = false
+        // 驗證失敗，返回登入頁
+        this.$router.push('/login')
+      }
     },
-    signout () {
-      document.cookie = 'lizToken=;expires=;'
-      this.$router.push('/login')
+    async signout () {
+      try {
+        await this.$supabase.auth.signOut()
+        this.$router.push('/login')
+      } catch (error) {
+        console.error('Sign out error:', error)
+      }
     }
   }
 }

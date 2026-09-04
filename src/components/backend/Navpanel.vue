@@ -50,10 +50,15 @@ export default {
     }
   },
   methods: {
-    signout () {
-      document.cookie = 'lizToken=;expires=;'
-      this.$bus.$emit('message:push', '登出成功 (ゝ∀･)b', 'success')
-      this.$router.push('/login')
+    async signout () {
+      try {
+        await this.$supabase.auth.signOut()
+        this.$bus.$emit('message:push', '登出成功 (ゝ∀･)b', 'success')
+        this.$router.push('/login')
+      } catch (error) {
+        console.error('Sign out error:', error)
+        this.$router.push('/login')
+      }
     }
   }
 }

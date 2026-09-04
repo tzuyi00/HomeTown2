@@ -173,23 +173,23 @@ export default {
     return {
       img: {
         header:
-          'https://hexschool-api.s3.us-west-2.amazonaws.com/custom/965WJvjXtivbDm2fB6MjvgFvWT6FSpDGIaMpFHPvoGVm0nWCQ1JEfEK3tcCk5X26TsBWiKOrM5zddvaXKgB6AhEz3tQewtGsMqu7AcpcPRTzRRjDPcydPvSMpsWcBVNH.jpg',
+          'https://kslpccltrlcujjongied.supabase.co/storage/v1/object/public/site-assets/1767018324497.jpg',
         aboutUs:
-          'https://hexschool-api.s3.us-west-2.amazonaws.com/custom/M0A1F1XQUAbr2E4Qpuy132rD1Mmj6RBnzbAjeFL1GsBTdcA5ltZwz7hwzYJTuLPl9Otp6n9hwRxThnovGxnwpSJkfj6kul0xL0MYBQ1O30stkps6MplKsiXfaxYeNaJB.jpg',
+          'https://kslpccltrlcujjongied.supabase.co/storage/v1/object/public/site-assets/1767018316741.jpg',
         arr1:
-          'https://hexschool-api.s3.us-west-2.amazonaws.com/custom/dvVxvM1M4MYdXOwO3bwBigWaoIIuKmuuGtAoK15dgHpmhJm8K2WRASUlmrhTFxuEvI1xUECD6ku1wc7zgb5Yy74lqFfMrjcxhuJ6773w0JBkWSSHT1eJZIGSNvEPrCHE.jpg',
+          'https://kslpccltrlcujjongied.supabase.co/storage/v1/object/public/site-assets/1767019323643.jpg',
         arr2:
-          'https://hexschool-api.s3.us-west-2.amazonaws.com/custom/Tw31KMK9orIPzNAlx2mP0t8nR9bqe1unz9a75Ooc6V4nsT5pzDGMDUCJnkJFB5pMZOQYEBmpvGfQeoB3mtXJs2yEaA3bETai9P0Wi817DOgQgy8SbUNOY9PQO8EWbcRU.jpg',
+          'https://kslpccltrlcujjongied.supabase.co/storage/v1/object/public/site-assets/1767018289972.jpg',
         arr3:
-          'https://hexschool-api.s3.us-west-2.amazonaws.com/custom/5avzNHhiaukMHhN6v5xtPxrFp21zVw0v5mTETAjoU0IIu7sFDDIlqEQvnKW2NkYHdpWPOkW8jrV5puN09yuaACkHkhf1RpWT5IECLkv8oDckcgepoxOhCIxAVNDCnVBw.jpg',
+          'https://kslpccltrlcujjongied.supabase.co/storage/v1/object/public/site-assets/1767018273823.jpg',
         middleBg:
-          'https://hexschool-api.s3.us-west-2.amazonaws.com/custom/APyH4hoonnPFz55P2cdhuIEG7CGJhNT59P4F5WhXD3rhlkywYxCPLNbNxGRmX2KCKbppKiZmnr8rB6j0kH0qzJ0D6tOv5G2a5ZBYsZdrFgcL7vQjd321Nr5yjh1Qk1oa.jpg',
+          'https://kslpccltrlcujjongied.supabase.co/storage/v1/object/public/site-assets/1767018265250.jpg',
         good1:
-          'https://hexschool-api.s3.us-west-2.amazonaws.com/custom/zFVVWbhJ6Gbphym6yHXfxQ0QIYWbL89d8RVxiodwuCFhryhlIgIgCReG7SDDBxZuCkwX55l2hBiA3lT1sdYTcWK5WqSxELBAy8XIjDsul9OSyC7ErhR4RVyRoZaekK5J.jpg',
+          'https://kslpccltrlcujjongied.supabase.co/storage/v1/object/public/site-assets/1767018236271.jpg',
         good2:
-          'https://hexschool-api.s3.us-west-2.amazonaws.com/custom/xnWf5lJ4Ecm4KDTPSCmzIOal1VYSlGUQmJ5f3SAMlMf7PjE1ksL5yEhEfFmoym2eO3TCS2XE2Bd183nMKzxKJoAyL3YyzDrRytXjCsHFto9HXPpYii5zswrdsrpkv9mk.jpg',
+          'https://kslpccltrlcujjongied.supabase.co/storage/v1/object/public/site-assets/1767018225693.jpg',
         flower:
-          'https://hexschool-api.s3.us-west-2.amazonaws.com/custom/i741reDciHoKdI2bG8kglvbsTK3H6SvlXRVOOU9zPldewURJrWVOHXtFDBewj4d46FNswd3sPB2SZnU6OaLldX0HCmdcC3cDMZPz1e1CKUwkkR7PP4p38I1FI0brMIqm.png'
+          'https://kslpccltrlcujjongied.supabase.co/storage/v1/object/public/site-assets/1767018217644.png'
       }
     }
   },
