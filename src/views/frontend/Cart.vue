@@ -485,15 +485,8 @@ export default {
     async createOrder () {
       try {
         this.isLoading = true
+        // 訪客可直接結帳，不需登入
         const user = this.$supabase.auth.user()
-
-        if (!user) {
-          // 結帳時需要登入
-          this.$bus.$emit('message:push', 'Please login to complete your order', 'info')
-          this.$router.push('/login')
-          this.isLoading = false
-          return
-        }
 
         // 計算訂單總額
         let total = this.cartTotal
@@ -508,7 +501,7 @@ export default {
         const { data: order, error: orderError } = await this.$supabase
           .from('orders')
           .insert({
-            user_id: user.id,
+            user_id: user ? user.id : null,
             name: this.form.name,
             email: this.form.email,
             tel: this.form.tel,
@@ -539,12 +532,16 @@ export default {
         if (itemsError) throw itemsError
 
         // 清空購物車
-        const { error: deleteError } = await this.$supabase
-          .from('cart_items')
-          .delete()
-          .eq('user_id', user.id)
+        if (user) {
+          const { error: deleteError } = await this.$supabase
+            .from('cart_items')
+            .delete()
+            .eq('user_id', user.id)
 
-        if (deleteError) throw deleteError
+          if (deleteError) throw deleteError
+        } else {
+          localStorage.removeItem('cart')
+        }
 
         this.$router.push(`/payment/${order.id}`)
         this.$bus.$emit('nav-getCart')
